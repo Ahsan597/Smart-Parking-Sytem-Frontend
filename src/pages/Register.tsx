@@ -2,10 +2,9 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { getErrorMessage } from '../services/errorUtils'
+import { getHomeRouteForRole } from '../utils/roleRoutes'
 import AuthCard from '../components/AuthCard'
 import FormField from '../components/FormField'
-import ErrorAlert from '../components/ErrorAlert'
 
 function Register() {
   const { register } = useAuth()
@@ -15,19 +14,15 @@ function Register() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    setError(null)
     setIsSubmitting(true)
     try {
-      await register({ fullName, email, password, phone: phone || undefined })
-      navigate('/', { replace: true })
-    } catch (err) {
-      setError(getErrorMessage(err))
-    } finally {
+      const registeredUser = await register({ fullName, email, password, phone: phone || undefined })
+      navigate(getHomeRouteForRole(registeredUser.role), { replace: true })
+    } catch {
       setIsSubmitting(false)
     }
   }
@@ -65,7 +60,6 @@ function Register() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <ErrorAlert message={error} />
         <button
           type="submit"
           disabled={isSubmitting}

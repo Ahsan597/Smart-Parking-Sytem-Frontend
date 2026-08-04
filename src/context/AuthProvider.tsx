@@ -33,12 +33,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { accessToken, user: loggedInUser } = await authService.login(payload)
     localStorage.setItem('token', accessToken)
     setUser(loggedInUser)
+    return loggedInUser
   }
 
   async function register(payload: RegisterPayload) {
     const { accessToken, user: registeredUser } = await authService.register(payload)
     localStorage.setItem('token', accessToken)
     setUser(registeredUser)
+    return registeredUser
   }
 
   function logout() {

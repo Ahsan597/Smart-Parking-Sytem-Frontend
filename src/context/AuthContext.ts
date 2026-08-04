@@ -5,8 +5,8 @@ export interface AuthContextValue {
   user: AuthUser | null
   isAuthenticated: boolean
   isInitializing: boolean
-  login: (payload: LoginPayload) => Promise<void>
-  register: (payload: RegisterPayload) => Promise<void>
+  login: (payload: LoginPayload) => Promise<AuthUser>
+  register: (payload: RegisterPayload) => Promise<AuthUser>
   logout: () => void
 }
 

@@ -1,8 +1,10 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { getHomeRouteForRole } from '../utils/roleRoutes'
+import type { UserRole } from '../types/auth.types'
 
-function ProtectedRoute() {
-  const { isAuthenticated, isInitializing } = useAuth()
+function ProtectedRoute({ allowedRoles }: { allowedRoles?: UserRole[] }) {
+  const { user, isAuthenticated, isInitializing } = useAuth()
 
   if (isInitializing) {
     return (
@@ -12,8 +14,12 @@ function ProtectedRoute() {
     )
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to={getHomeRouteForRole(user.role)} replace />
   }
 
   return <Outlet />

@@ -2,10 +2,9 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { getErrorMessage } from '../services/errorUtils'
+import { getHomeRouteForRole } from '../utils/roleRoutes'
 import AuthCard from '../components/AuthCard'
 import FormField from '../components/FormField'
-import ErrorAlert from '../components/ErrorAlert'
 
 function Login() {
   const { login } = useAuth()
@@ -13,19 +12,15 @@ function Login() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    setError(null)
     setIsSubmitting(true)
     try {
-      await login({ email, password })
-      navigate('/', { replace: true })
-    } catch (err) {
-      setError(getErrorMessage(err))
-    } finally {
+      const loggedInUser = await login({ email, password })
+      navigate(getHomeRouteForRole(loggedInUser.role), { replace: true })
+    } catch {
       setIsSubmitting(false)
     }
   }
@@ -49,7 +44,6 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <ErrorAlert message={error} />
         <button
           type="submit"
           disabled={isSubmitting}

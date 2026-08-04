@@ -1,5 +1,6 @@
 import api from './api'
-import type { User, UpdateProfilePayload } from '../types/user.types'
+import type { UserRole } from '../types/auth.types'
+import type { User, UpdateProfilePayload, CreateManagerPayload, UpdateUserRolePayload } from '../types/user.types'
 
 export const userService = {
   getMe() {
@@ -8,7 +9,16 @@ export const userService = {
   updateMe(payload: UpdateProfilePayload) {
     return api.patch<User>('/users/me', payload).then((res) => res.data)
   },
-  getAll() {
-    return api.get<User[]>('/users').then((res) => res.data)
+  getAll(role?: UserRole) {
+    return api.get<User[]>('/users', { params: role ? { role } : undefined }).then((res) => res.data)
+  },
+  getManagers() {
+    return api.get<User[]>('/users', { params: { role: 'PARKING_MANAGER' } }).then((res) => res.data)
+  },
+  createManager(payload: CreateManagerPayload) {
+    return api.post<User>('/users/managers', payload).then((res) => res.data)
+  },
+  updateRole(id: string, payload: UpdateUserRolePayload) {
+    return api.patch<User>(`/users/${id}/role`, payload).then((res) => res.data)
   },
 }

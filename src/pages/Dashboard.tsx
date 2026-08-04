@@ -1,38 +1,25 @@
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useVehicles } from '../hooks/useVehicles'
+import AppHeader from '../components/AppHeader'
 import ErrorAlert from '../components/ErrorAlert'
+import Badge from '../components/Badge'
 
 function Dashboard() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const { vehicles, isLoading, error } = useVehicles()
-  const navigate = useNavigate()
-
-  function handleLogout() {
-    logout()
-    navigate('/login', { replace: true })
-  }
 
   return (
     <div className="min-h-screen bg-navy-950">
-      <header className="flex items-center justify-between border-b border-navy-700 bg-navy-900 px-6 py-4">
-        <h1 className="text-lg font-semibold text-white">Parking Management System</h1>
-        <button
-          onClick={handleLogout}
-          className="rounded-md border border-navy-600 px-4 py-2 text-sm font-medium text-slate-300 transition hover:border-navy-500 hover:text-white"
-        >
-          Logout
-        </button>
-      </header>
+      <AppHeader title="Parking Management System" />
 
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="mb-6 rounded-lg border border-navy-700 bg-navy-900 p-4">
           <p className="text-sm text-slate-400">Logged in as</p>
           <p className="text-lg font-semibold text-white">{user?.fullName}</p>
           <p className="text-sm text-slate-400">{user?.email}</p>
-          <span className="mt-2 inline-block rounded-full bg-electric-500/15 px-2 py-1 text-xs font-medium text-electric-400 ring-1 ring-electric-500/30">
-            {user?.role}
-          </span>
+          <div className="mt-2">
+            <Badge label={user?.role ?? ''} />
+          </div>
         </div>
 
         <h2 className="mb-3 text-sm font-medium text-slate-400">Your Vehicles</h2>
