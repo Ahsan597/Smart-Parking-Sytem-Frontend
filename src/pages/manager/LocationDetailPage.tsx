@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useFetch } from '../../hooks/useFetch'
 import { locationService } from '../../services/locationService'
 import { floorService } from '../../services/floorService'
+import { pricingService } from '../../services/pricingService'
 import FormField from '../../components/FormField'
 import ErrorAlert from '../../components/ErrorAlert'
 import Badge from '../../components/Badge'
@@ -14,10 +15,25 @@ function LocationDetailPage() {
     () => locationService.getById(locationId!),
     [locationId],
   )
+  const { data: pricing, refetch: refetchPricing } = useFetch(
+    () => pricingService.getPricing(locationId!),
+    [locationId],
+  )
 
   const [name, setName] = useState('')
   const [floorNumber, setFloorNumber] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const [hourlyRate, setHourlyRate] = useState('')
+  const [dailyRate, setDailyRate] = useState('')
+  const [monthlyRate, setMonthlyRate] = useState('')
+  const [isSavingPricing, setIsSavingPricing] = useState(false)
+
+  useEffect(() => {
+    setHourlyRate(pricing?.hourlyRate ?? '')
+    setDailyRate(pricing?.dailyRate ?? '')
+    setMonthlyRate(pricing?.monthlyRate ?? '')
+  }, [pricing])
 
   async function handleAddFloor(event: FormEvent) {
     event.preventDefault()
@@ -31,6 +47,23 @@ function LocationDetailPage() {
       // toast shown by the response interceptor
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  async function handleSavePricing(event: FormEvent) {
+    event.preventDefault()
+    setIsSavingPricing(true)
+    try {
+      await pricingService.setPricing(locationId!, {
+        hourlyRate: Number(hourlyRate),
+        dailyRate: dailyRate ? Number(dailyRate) : undefined,
+        monthlyRate: monthlyRate ? Number(monthlyRate) : undefined,
+      })
+      await refetchPricing()
+    } catch {
+      // toast shown by the response interceptor
+    } finally {
+      setIsSavingPricing(false)
     }
   }
 
@@ -60,6 +93,51 @@ function LocationDetailPage() {
         <p className="text-sm text-slate-400">
           {location.address}, {location.city}
         </p>
+      </div>
+
+      <div className="rounded-lg border border-navy-700 bg-navy-900 p-4">
+        <h3 className="mb-4 text-sm font-medium text-slate-400">
+          Pricing {!pricing && <span className="text-amber-400">(not set — checkout will fail until this is set)</span>}
+        </h3>
+        <form onSubmit={handleSavePricing} className="grid grid-cols-3 gap-4">
+          <FormField
+            id="hourlyRate"
+            label="Hourly Rate"
+            type="number"
+            step="any"
+            min={0}
+            value={hourlyRate}
+            onChange={(e) => setHourlyRate(e.target.value)}
+            required
+          />
+          <FormField
+            id="dailyRate"
+            label="Daily Rate (optional)"
+            type="number"
+            step="any"
+            min={0}
+            value={dailyRate}
+            onChange={(e) => setDailyRate(e.target.value)}
+          />
+          <FormField
+            id="monthlyRate"
+            label="Monthly Rate (optional)"
+            type="number"
+            step="any"
+            min={0}
+            value={monthlyRate}
+            onChange={(e) => setMonthlyRate(e.target.value)}
+          />
+          <div className="col-span-3">
+            <button
+              type="submit"
+              disabled={isSavingPricing}
+              className="rounded-md bg-electric-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-electric-600 disabled:opacity-60"
+            >
+              {isSavingPricing ? 'Saving...' : 'Save Pricing'}
+            </button>
+          </div>
+        </form>
       </div>
 
       <div className="rounded-lg border border-navy-700 bg-navy-900 p-4">

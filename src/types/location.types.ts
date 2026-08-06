@@ -1,4 +1,5 @@
 import type { FloorWithSlots } from './floor.types'
+import type { Pricing } from './pricing.types'
 
 export type ParkingLocationStatus = 'ACTIVE' | 'INACTIVE'
 
@@ -25,6 +26,19 @@ export interface ParkingLocationManager {
 export interface ParkingLocationDetail extends ParkingLocation {
   floors: FloorWithSlots[]
   manager: ParkingLocationManager | null
+}
+
+// GET /parking-locations (search) enriches each location with live pricing/availability.
+// Other endpoints (e.g. /parking-locations/my) return the bare ParkingLocation shape.
+export interface ParkingLocationSearchResult extends ParkingLocation {
+  pricing: Pricing | null
+  availableSlots: number
+}
+
+export interface SearchLocationsParams {
+  city?: string
+  name?: string
+  onlyAvailable?: boolean
 }
 
 export interface CreateLocationPayload {
