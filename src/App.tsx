@@ -4,7 +4,11 @@ import { AuthProvider } from './context/AuthProvider'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
+import DriverLayout from './pages/driver/DriverLayout'
+import Dashboard from './pages/driver/Dashboard'
+import SearchParkingPage from './pages/driver/SearchParkingPage'
+import LocationSlotsPage from './pages/driver/LocationSlotsPage'
+import MyBookingsPage from './pages/driver/MyBookingsPage'
 import AdminLayout from './pages/admin/AdminLayout'
 import ManagersPage from './pages/admin/ManagersPage'
 import LocationsPage from './pages/admin/LocationsPage'
@@ -36,7 +40,12 @@ function App() {
           <Route path="/register" element={<Register />} />
 
           <Route element={<ProtectedRoute allowedRoles={['USER']} />}>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<DriverLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="search" element={<SearchParkingPage />} />
+              <Route path="locations/:locationId" element={<LocationSlotsPage />} />
+              <Route path="bookings" element={<MyBookingsPage />} />
+            </Route>
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']} />}>

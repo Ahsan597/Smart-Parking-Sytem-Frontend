@@ -3,11 +3,13 @@ import type { FormEvent } from 'react'
 import { useFetch } from '../../hooks/useFetch'
 import { locationService } from '../../services/locationService'
 import { userService } from '../../services/userService'
+import { pricingService } from '../../services/pricingService'
 import FormField from '../../components/FormField'
 import SelectField from '../../components/SelectField'
 import ErrorAlert from '../../components/ErrorAlert'
 import Badge from '../../components/Badge'
 import type { ParkingLocation, ParkingLocationStatus } from '../../types/location.types'
+import type { Pricing } from '../../types/pricing.types'
 
 function LocationsPage() {
   const { data: locations, isLoading, error, refetch } = useFetch(() => locationService.getAll(), [])
@@ -27,6 +29,9 @@ function LocationsPage() {
   const [editCity, setEditCity] = useState('')
   const [editManagerId, setEditManagerId] = useState('')
   const [editStatus, setEditStatus] = useState<ParkingLocationStatus>('ACTIVE')
+  const [editHourlyRate, setEditHourlyRate] = useState('')
+  const [editDailyRate, setEditDailyRate] = useState('')
+  const [editMonthlyRate, setEditMonthlyRate] = useState('')
   const [isSavingEdit, setIsSavingEdit] = useState(false)
 
   function managerName(id: string | null) {
@@ -38,7 +43,7 @@ function LocationsPage() {
     event.preventDefault()
     setIsCreating(true)
     try {
-      await locationService.create({
+      const created = await locationService.create({
         name,
         address,
         city,
@@ -53,6 +58,8 @@ function LocationsPage() {
       setLongitude('')
       setManagerId('')
       await refetch()
+      // Jump straight into the edit panel so pricing isn't a step that gets missed.
+      startEdit(created)
     } catch {
       // toast shown by the response interceptor
     } finally {
@@ -60,13 +67,16 @@ function LocationsPage() {
     }
   }
 
-  function startEdit(location: ParkingLocation) {
+  function startEdit(location: ParkingLocation & { pricing?: Pricing | null }) {
     setEditingId(location.id)
     setEditName(location.name)
     setEditAddress(location.address)
     setEditCity(location.city)
     setEditManagerId(location.managerId ?? '')
     setEditStatus(location.status)
+    setEditHourlyRate(location.pricing?.hourlyRate ?? '')
+    setEditDailyRate(location.pricing?.dailyRate ?? '')
+    setEditMonthlyRate(location.pricing?.monthlyRate ?? '')
   }
 
   function cancelEdit() {
@@ -85,6 +95,13 @@ function LocationsPage() {
         managerId: editManagerId || undefined,
         status: editStatus,
       })
+      if (editHourlyRate) {
+        await pricingService.setPricing(editingId, {
+          hourlyRate: Number(editHourlyRate),
+          dailyRate: editDailyRate ? Number(editDailyRate) : undefined,
+          monthlyRate: editMonthlyRate ? Number(editMonthlyRate) : undefined,
+        })
+      }
       setEditingId(null)
       await refetch()
     } catch {
@@ -222,6 +239,43 @@ function LocationsPage() {
                       <option value="INACTIVE">INACTIVE</option>
                     </SelectField>
                   </div>
+
+                  <div className="mt-4 border-t border-navy-700 pt-4">
+                    <p className="mb-3 text-sm font-medium text-slate-400">
+                      Pricing {!location.pricing && <span className="text-amber-400">(not set yet)</span>}
+                    </p>
+                    <div className="grid grid-cols-3 gap-4">
+                      <FormField
+                        id={`edit-hourly-${location.id}`}
+                        label="Hourly Rate"
+                        type="number"
+                        step="any"
+                        min={0}
+                        value={editHourlyRate}
+                        onChange={(e) => setEditHourlyRate(e.target.value)}
+                        required
+                      />
+                      <FormField
+                        id={`edit-daily-${location.id}`}
+                        label="Daily Rate (optional)"
+                        type="number"
+                        step="any"
+                        min={0}
+                        value={editDailyRate}
+                        onChange={(e) => setEditDailyRate(e.target.value)}
+                      />
+                      <FormField
+                        id={`edit-monthly-${location.id}`}
+                        label="Monthly Rate (optional)"
+                        type="number"
+                        step="any"
+                        min={0}
+                        value={editMonthlyRate}
+                        onChange={(e) => setEditMonthlyRate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
                   <div className="mt-4 flex items-center gap-3">
                     <button
                       type="submit"
@@ -252,6 +306,13 @@ function LocationsPage() {
                       {location.address}, {location.city}
                     </p>
                     <p className="text-sm text-slate-500">Manager: {managerName(location.managerId)}</p>
+                    {location.pricing ? (
+                      <p className="text-sm text-slate-500">Rs {location.pricing.hourlyRate}/hr</p>
+                    ) : (
+                      <span className="mt-1 inline-block rounded-full bg-amber-500/15 px-2 py-1 text-xs font-medium text-amber-400 ring-1 ring-amber-500/30">
+                        No pricing set
+                      </span>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     <button
