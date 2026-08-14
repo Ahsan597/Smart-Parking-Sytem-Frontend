@@ -2,6 +2,8 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useFetch } from '../../hooks/useFetch'
+import { useFavorites } from '../../hooks/useFavorites'
+import { useSlotUpdates } from '../../hooks/useSlotUpdates'
 import { locationService } from '../../services/locationService'
 import { pricingService } from '../../services/pricingService'
 import { vehicleService } from '../../services/vehicleService'
@@ -10,6 +12,7 @@ import ErrorAlert from '../../components/ErrorAlert'
 import Modal from '../../components/Modal'
 import FormField from '../../components/FormField'
 import SelectField from '../../components/SelectField'
+import FavoriteButton from '../../components/FavoriteButton'
 import type { AvailableSlot } from '../../types/booking.types'
 
 function LocationSlotsPage() {
@@ -27,6 +30,10 @@ function LocationSlotsPage() {
   } = useFetch(() => locationService.getAvailableSlots(locationId!), [locationId])
   const { data: pricing } = useFetch(() => pricingService.getPricing(locationId!), [locationId])
   const { data: vehicles } = useFetch(() => vehicleService.getAll(), [])
+  const { favoriteLocationIds, toggleFavorite } = useFavorites()
+
+  // A slot changing status anywhere in this location can affect the available list either way.
+  useSlotUpdates(locationId, () => refetchSlots())
 
   const [reservingSlot, setReservingSlot] = useState<AvailableSlot | null>(null)
   const [vehicleId, setVehicleId] = useState('')
@@ -82,7 +89,13 @@ function LocationSlotsPage() {
         <Link to="/search" className="text-sm text-electric-400 hover:text-electric-300">
           ← Find Parking
         </Link>
-        <h2 className="mt-2 text-xl font-semibold text-white">{location.name}</h2>
+        <div className="mt-2 flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-white">{location.name}</h2>
+          <FavoriteButton
+            isFavorite={favoriteLocationIds.has(location.id)}
+            onToggle={() => toggleFavorite(location.id)}
+          />
+        </div>
         <p className="text-sm text-slate-400">
           {location.address}, {location.city}
         </p>

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useFetch } from '../../hooks/useFetch'
+import { useSlotUpdates } from '../../hooks/useSlotUpdates'
 import { floorService } from '../../services/floorService'
 import { slotService } from '../../services/slotService'
 import FormField from '../../components/FormField'
@@ -16,6 +17,13 @@ const SLOT_STATUSES: SlotStatus[] = ['AVAILABLE', 'RESERVED', 'OCCUPIED', 'MAINT
 function FloorDetailPage() {
   const { floorId } = useParams<{ floorId: string }>()
   const { data: floor, isLoading, error, refetch } = useFetch(() => floorService.getById(floorId!), [floorId])
+
+  // Joining happens at the location level; only refetch when the update is for this floor.
+  useSlotUpdates(floor?.parkingLocationId, (payload) => {
+    if (payload.floorId === floorId) {
+      refetch()
+    }
+  })
 
   const [slotCode, setSlotCode] = useState('')
   const [slotType, setSlotType] = useState<SlotType>('NORMAL')

@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useFetch } from '../../hooks/useFetch'
+import { useFavorites } from '../../hooks/useFavorites'
 import { locationService } from '../../services/locationService'
 import FormField from '../../components/FormField'
 import ErrorAlert from '../../components/ErrorAlert'
+import FavoriteButton from '../../components/FavoriteButton'
 import type { SearchLocationsParams } from '../../types/location.types'
 
 function SearchParkingPage() {
+  const navigate = useNavigate()
   const [cityInput, setCityInput] = useState('')
   const [nameInput, setNameInput] = useState('')
   const [onlyAvailableInput, setOnlyAvailableInput] = useState(false)
@@ -17,6 +20,7 @@ function SearchParkingPage() {
     () => locationService.getAll(filters),
     [filters.city, filters.name, filters.onlyAvailable],
   )
+  const { favoriteLocationIds, toggleFavorite } = useFavorites()
 
   function handleSearch(event: FormEvent) {
     event.preventDefault()
@@ -63,10 +67,10 @@ function SearchParkingPage() {
         ) : (
           <div className="flex flex-col gap-3">
             {locations.map((location) => (
-              <Link
+              <div
                 key={location.id}
-                to={`/locations/${location.id}`}
-                className="flex items-center justify-between rounded-lg border border-navy-700 bg-navy-900 p-4 transition hover:border-navy-500"
+                onClick={() => navigate(`/locations/${location.id}`)}
+                className="flex cursor-pointer items-center justify-between rounded-lg border border-navy-700 bg-navy-900 p-4 transition hover:border-navy-500"
               >
                 <div>
                   <p className="font-medium text-white">{location.name}</p>
@@ -77,16 +81,22 @@ function SearchParkingPage() {
                     {location.pricing ? `Rs ${location.pricing.hourlyRate}/hr` : 'Pricing not set'}
                   </p>
                 </div>
-                <span
-                  className={`rounded-full px-2 py-1 text-xs font-medium ${
-                    location.availableSlots > 0
-                      ? 'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30'
-                      : 'bg-slate-500/15 text-slate-400 ring-1 ring-slate-500/30'
-                  }`}
-                >
-                  {location.availableSlots} available
-                </span>
-              </Link>
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs font-medium ${
+                      location.availableSlots > 0
+                        ? 'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30'
+                        : 'bg-slate-500/15 text-slate-400 ring-1 ring-slate-500/30'
+                    }`}
+                  >
+                    {location.availableSlots} available
+                  </span>
+                  <FavoriteButton
+                    isFavorite={favoriteLocationIds.has(location.id)}
+                    onToggle={() => toggleFavorite(location.id)}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         )}

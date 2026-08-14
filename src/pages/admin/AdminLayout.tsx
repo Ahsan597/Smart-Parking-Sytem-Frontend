@@ -15,6 +15,9 @@ function AdminLayout() {
           <NavLink to="/admin/locations" className={linkClass}>
             Locations
           </NavLink>
+          <NavLink to="/admin/analytics" className={linkClass}>
+            Analytics
+          </NavLink>
         </nav>
       </AppHeader>
       <main className="mx-auto max-w-5xl px-6 py-10">

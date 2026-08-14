@@ -18,6 +18,12 @@ function DriverLayout() {
           <NavLink to="/bookings" className={linkClass}>
             My Bookings
           </NavLink>
+          <NavLink to="/favorites" className={linkClass}>
+            Favorites
+          </NavLink>
+          <NavLink to="/payments" className={linkClass}>
+            Payments
+          </NavLink>
         </nav>
       </AppHeader>
       <main className="mx-auto max-w-5xl px-6 py-10">
