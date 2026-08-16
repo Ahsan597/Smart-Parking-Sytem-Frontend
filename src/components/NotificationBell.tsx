@@ -44,7 +44,7 @@ function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-40 mt-2 w-80 rounded-lg border border-navy-700 bg-navy-900 shadow-lg">
+        <div className="absolute right-0 z-40 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-lg border border-navy-700 bg-navy-900 shadow-lg">
           <div className="flex items-center justify-between border-b border-navy-700 px-4 py-3">
             <p className="text-sm font-medium text-white">Notifications</p>
             {unreadCount > 0 && (

@@ -56,7 +56,7 @@ function Dashboard() {
 
       <div className="rounded-lg border border-navy-700 bg-navy-900 p-4">
         <h2 className="mb-4 text-sm font-medium text-slate-400">Add Vehicle</h2>
-        <form onSubmit={handleAddVehicle} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleAddVehicle} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField
             id="vehicleNumber"
             label="Vehicle Number"
@@ -88,7 +88,7 @@ function Dashboard() {
             value={vehicleModel}
             onChange={(e) => setVehicleModel(e.target.value)}
           />
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <button
               type="submit"
               disabled={isSubmitting}
@@ -110,8 +110,8 @@ function Dashboard() {
         ) : vehicles.length === 0 ? (
           <p className="text-slate-400">No vehicles added yet.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-navy-700 bg-navy-900">
-            <table className="w-full text-left text-sm">
+          <div className="overflow-x-auto rounded-lg border border-navy-700 bg-navy-900">
+            <table className="w-full min-w-120 text-left text-sm">
               <thead className="bg-navy-800 text-slate-400">
                 <tr>
                   <th className="px-4 py-3 font-medium">Number</th>

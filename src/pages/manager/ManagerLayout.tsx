@@ -8,7 +8,7 @@ function ManagerLayout() {
   return (
     <div className="min-h-screen bg-navy-950">
       <AppHeader title="Parking Manager">
-        <nav className="flex gap-4 text-sm">
+        <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
           <NavLink to="/manager" end className={linkClass}>
             My Locations
           </NavLink>
@@ -17,7 +17,7 @@ function ManagerLayout() {
           </NavLink>
         </nav>
       </AppHeader>
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
         <Outlet />
       </main>
     </div>

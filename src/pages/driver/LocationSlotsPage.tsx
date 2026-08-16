@@ -122,7 +122,7 @@ function LocationSlotsPage() {
                   {floor.slots.map((slot) => (
                     <div
                       key={slot.id}
-                      className="flex w-40 flex-col gap-2 rounded-lg border border-navy-700 bg-navy-900 p-3"
+                      className="flex w-32 flex-col gap-2 rounded-lg border border-navy-700 bg-navy-900 p-3 sm:w-40"
                     >
                       <p className="font-mono text-white">{slot.slotCode}</p>
                       <p className="text-xs text-slate-400 capitalize">{slot.slotType}</p>

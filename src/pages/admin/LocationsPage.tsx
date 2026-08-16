@@ -125,7 +125,7 @@ function LocationsPage() {
     <div className="flex flex-col gap-8">
       <div className="rounded-lg border border-navy-700 bg-navy-900 p-4">
         <h2 className="mb-4 text-sm font-medium text-slate-400">Create Location</h2>
-        <form onSubmit={handleCreate} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleCreate} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField id="name" label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
           <FormField id="city" label="City" value={city} onChange={(e) => setCity(e.target.value)} required />
           <FormField
@@ -166,7 +166,7 @@ function LocationsPage() {
             onChange={(e) => setLongitude(e.target.value)}
             required
           />
-          <div className="col-span-2 flex items-center gap-4">
+          <div className="flex items-center gap-4 sm:col-span-2">
             <button
               type="submit"
               disabled={isCreating}
@@ -194,7 +194,7 @@ function LocationsPage() {
                   onSubmit={handleSaveEdit}
                   className="rounded-lg border border-electric-500/50 bg-navy-900 p-4"
                 >
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <FormField
                       id={`edit-name-${location.id}`}
                       label="Name"
@@ -244,7 +244,7 @@ function LocationsPage() {
                     <p className="mb-3 text-sm font-medium text-slate-400">
                       Pricing {!location.pricing && <span className="text-amber-400">(not set yet)</span>}
                     </p>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                       <FormField
                         id={`edit-hourly-${location.id}`}
                         label="Hourly Rate"
@@ -296,9 +296,9 @@ function LocationsPage() {
               ) : (
                 <div
                   key={location.id}
-                  className="flex items-center justify-between rounded-lg border border-navy-700 bg-navy-900 p-4"
+                  className="flex flex-col gap-3 rounded-lg border border-navy-700 bg-navy-900 p-4 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-medium text-white">
                       {location.name} <Badge label={location.status} />
                     </p>
@@ -314,7 +314,7 @@ function LocationsPage() {
                       </span>
                     )}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 sm:shrink-0">
                     <button
                       onClick={() => startEdit(location)}
                       className="rounded-md border border-navy-600 px-3 py-1.5 text-sm text-slate-300 hover:border-navy-500 hover:text-white"

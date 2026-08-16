@@ -19,9 +19,9 @@ function MyFavoritesPage() {
           {favorites.map((favorite) => (
             <div
               key={favorite.id}
-              className="flex items-center justify-between rounded-lg border border-navy-700 bg-navy-900 p-4"
+              className="flex items-center justify-between gap-3 rounded-lg border border-navy-700 bg-navy-900 p-4"
             >
-              <Link to={`/locations/${favorite.parkingLocationId}`} className="flex-1">
+              <Link to={`/locations/${favorite.parkingLocationId}`} className="min-w-0 flex-1">
                 <p className="font-medium text-white">{favorite.parkingLocation.name}</p>
                 <p className="text-sm text-slate-400">
                   {favorite.parkingLocation.address}, {favorite.parkingLocation.city}

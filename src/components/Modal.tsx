@@ -8,7 +8,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-lg border border-navy-700 bg-navy-900 p-6"
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-navy-700 bg-navy-900 p-4 sm:p-6"
         onClick={stopPropagation}
       >
         <div className="mb-4 flex items-center justify-between">

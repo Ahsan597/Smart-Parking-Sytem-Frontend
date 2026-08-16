@@ -99,7 +99,7 @@ function LocationDetailPage() {
         <h3 className="mb-4 text-sm font-medium text-slate-400">
           Pricing {!pricing && <span className="text-amber-400">(not set — checkout will fail until this is set)</span>}
         </h3>
-        <form onSubmit={handleSavePricing} className="grid grid-cols-3 gap-4">
+        <form onSubmit={handleSavePricing} className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <FormField
             id="hourlyRate"
             label="Hourly Rate"
@@ -128,7 +128,7 @@ function LocationDetailPage() {
             value={monthlyRate}
             onChange={(e) => setMonthlyRate(e.target.value)}
           />
-          <div className="col-span-3">
+          <div className="sm:col-span-3">
             <button
               type="submit"
               disabled={isSavingPricing}
@@ -142,7 +142,7 @@ function LocationDetailPage() {
 
       <div className="rounded-lg border border-navy-700 bg-navy-900 p-4">
         <h3 className="mb-4 text-sm font-medium text-slate-400">Add Floor</h3>
-        <form onSubmit={handleAddFloor} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleAddFloor} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField id="name" label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
           <FormField
             id="floorNumber"
@@ -152,7 +152,7 @@ function LocationDetailPage() {
             onChange={(e) => setFloorNumber(e.target.value)}
             required
           />
-          <div className="col-span-2 flex items-center gap-4">
+          <div className="flex items-center gap-4 sm:col-span-2">
             <button
               type="submit"
               disabled={isSubmitting}
@@ -173,15 +173,15 @@ function LocationDetailPage() {
             {location.floors.map((floor) => (
               <div
                 key={floor.id}
-                className="flex items-center justify-between rounded-lg border border-navy-700 bg-navy-900 p-4"
+                className="flex flex-col gap-3 rounded-lg border border-navy-700 bg-navy-900 p-4 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="font-medium text-white">{floor.name}</p>
                   <p className="text-sm text-slate-400">
                     Floor {floor.floorNumber} · {floor.slots.length} slot{floor.slots.length === 1 ? '' : 's'}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 sm:shrink-0">
                   <Link
                     to={`/manager/floors/${floor.id}`}
                     className="rounded-md border border-navy-600 px-3 py-1.5 text-sm text-slate-300 hover:border-navy-500 hover:text-white"

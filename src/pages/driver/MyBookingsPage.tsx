@@ -124,9 +124,9 @@ function MyBookingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <h2 className="text-sm font-medium text-slate-400">My Bookings</h2>
-        <div className="w-48">
+        <div className="w-full sm:w-48">
           <SelectField
             id="statusFilter"
             label="Status"
@@ -153,7 +153,7 @@ function MyBookingsPage() {
         <div className="flex flex-col gap-3">
           {bookings.map((booking) => (
             <div key={booking.id} className="rounded-lg border border-navy-700 bg-navy-900 p-4">
-              <div className="flex items-start justify-between">
+              <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <p className="font-medium text-white">
                     {booking.slot.floor.parkingLocation.name} · Slot {booking.slot.slotCode}
@@ -175,7 +175,7 @@ function MyBookingsPage() {
                 </p>
               )}
 
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   onClick={() => setViewingBooking(booking)}
                   className="rounded-md border border-navy-600 px-3 py-1.5 text-sm text-slate-300 hover:border-navy-500 hover:text-white"
