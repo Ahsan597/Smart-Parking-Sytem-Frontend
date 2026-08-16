@@ -9,6 +9,7 @@ import FormField from '../../components/FormField'
 import SelectField from '../../components/SelectField'
 import ErrorAlert from '../../components/ErrorAlert'
 import Badge from '../../components/Badge'
+import Modal from '../../components/Modal'
 import type { ParkingLocation, ParkingLocationStatus } from '../../types/location.types'
 import type { Pricing } from '../../types/pricing.types'
 
@@ -16,6 +17,7 @@ function LocationsPage() {
   const { data: locations, isLoading, error, refetch } = useFetch(() => locationService.getAll(), [])
   const { data: managers } = useFetch(() => userService.getManagers(), [])
 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
   const [city, setCity] = useState('')
@@ -40,6 +42,16 @@ function LocationsPage() {
     return managers?.find((m) => m.id === id)?.fullName ?? id
   }
 
+  function openAddModal() {
+    setName('')
+    setAddress('')
+    setCity('')
+    setLatitude('')
+    setLongitude('')
+    setManagerId('')
+    setIsAddModalOpen(true)
+  }
+
   async function handleCreate(event: FormEvent) {
     event.preventDefault()
     setIsCreating(true)
@@ -52,12 +64,7 @@ function LocationsPage() {
         longitude: Number(longitude),
         managerId: managerId || undefined,
       })
-      setName('')
-      setAddress('')
-      setCity('')
-      setLatitude('')
-      setLongitude('')
-      setManagerId('')
+      setIsAddModalOpen(false)
       await refetch()
       // Jump straight into the edit panel so pricing isn't a step that gets missed.
       startEdit(created)
@@ -124,63 +131,16 @@ function LocationsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="rounded-lg border border-navy-700 bg-navy-900 p-4">
-        <h2 className="mb-4 text-sm font-medium text-slate-400">Create Location</h2>
-        <form onSubmit={handleCreate} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField id="name" label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
-          <FormField id="city" label="City" value={city} onChange={(e) => setCity(e.target.value)} required />
-          <FormField
-            id="address"
-            label="Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            required
-          />
-          <SelectField
-            id="managerId"
-            label="Manager (optional)"
-            value={managerId}
-            onChange={(e) => setManagerId(e.target.value)}
-          >
-            <option value="">Unassigned</option>
-            {managers?.map((manager) => (
-              <option key={manager.id} value={manager.id}>
-                {manager.fullName}
-              </option>
-            ))}
-          </SelectField>
-          <FormField
-            id="latitude"
-            label="Latitude"
-            type="number"
-            step="any"
-            value={latitude}
-            onChange={(e) => setLatitude(e.target.value)}
-            required
-          />
-          <FormField
-            id="longitude"
-            label="Longitude"
-            type="number"
-            step="any"
-            value={longitude}
-            onChange={(e) => setLongitude(e.target.value)}
-            required
-          />
-          <div className="flex items-center gap-4 sm:col-span-2">
-            <button
-              type="submit"
-              disabled={isCreating}
-              className="rounded-md bg-electric-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-electric-600 disabled:opacity-60"
-            >
-              {isCreating ? 'Creating...' : 'Create Location'}
-            </button>
-          </div>
-        </form>
-      </div>
-
       <div>
-        <h2 className="mb-3 text-sm font-medium text-slate-400">Locations</h2>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-medium text-slate-400">Locations</h2>
+          <button
+            onClick={openAddModal}
+            className="rounded-md bg-electric-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-electric-600"
+          >
+            Add Location
+          </button>
+        </div>
         <ErrorAlert message={error} />
         {isLoading ? (
           <p className="text-slate-400">Loading locations...</p>
@@ -341,6 +301,60 @@ function LocationsPage() {
           </div>
         )}
       </div>
+
+      {isAddModalOpen && (
+        <Modal title="Add Location" onClose={() => setIsAddModalOpen(false)}>
+          <form onSubmit={handleCreate} className="flex flex-col gap-4">
+            <FormField id="name" label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+            <FormField id="city" label="City" value={city} onChange={(e) => setCity(e.target.value)} required />
+            <FormField
+              id="address"
+              label="Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              required
+            />
+            <SelectField
+              id="managerId"
+              label="Manager (optional)"
+              value={managerId}
+              onChange={(e) => setManagerId(e.target.value)}
+            >
+              <option value="">Unassigned</option>
+              {managers?.map((manager) => (
+                <option key={manager.id} value={manager.id}>
+                  {manager.fullName}
+                </option>
+              ))}
+            </SelectField>
+            <FormField
+              id="latitude"
+              label="Latitude"
+              type="number"
+              step="any"
+              value={latitude}
+              onChange={(e) => setLatitude(e.target.value)}
+              required
+            />
+            <FormField
+              id="longitude"
+              label="Longitude"
+              type="number"
+              step="any"
+              value={longitude}
+              onChange={(e) => setLongitude(e.target.value)}
+              required
+            />
+            <button
+              type="submit"
+              disabled={isCreating}
+              className="rounded-md bg-electric-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-electric-600 disabled:opacity-60"
+            >
+              {isCreating ? 'Creating...' : 'Create Location'}
+            </button>
+          </form>
+        </Modal>
+      )}
     </div>
   )
 }
