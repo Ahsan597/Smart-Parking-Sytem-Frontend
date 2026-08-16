@@ -3,6 +3,7 @@ import type { Floor } from './floor.types'
 import type { ParkingLocation } from './location.types'
 import type { Vehicle } from './vehicle.types'
 import type { Payment, PaymentMethod } from './payment.types'
+import type { User } from './user.types'
 
 export type BookingStatus = 'PENDING' | 'RESERVED' | 'CHECKED_IN' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED'
 
@@ -32,6 +33,12 @@ export interface Booking {
   slot: BookingSlot
   vehicle: Vehicle
   payment: Payment | null
+}
+
+// GET /parking-locations/:locationId/bookings (manager/admin view) — same shape as
+// a driver's own booking, plus the driver's own user info nested in.
+export interface LocationBooking extends Booking {
+  user: User
 }
 
 export interface CreateBookingPayload {

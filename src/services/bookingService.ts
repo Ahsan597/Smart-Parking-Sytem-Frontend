@@ -1,5 +1,11 @@
 import api from './api'
-import type { Booking, BookingStatus, CreateBookingPayload, CheckoutPayload } from '../types/booking.types'
+import type {
+  Booking,
+  BookingStatus,
+  LocationBooking,
+  CreateBookingPayload,
+  CheckoutPayload,
+} from '../types/booking.types'
 
 export const bookingService = {
   create(payload: CreateBookingPayload) {
@@ -19,5 +25,14 @@ export const bookingService = {
   },
   checkOut(id: string, payload?: CheckoutPayload) {
     return api.patch<Booking>(`/bookings/${id}/check-out`, payload).then((res) => res.data)
+  },
+  // Manager/admin view — bookings at a location they manage (or any, for admin).
+  getByLocation(locationId: string, status?: BookingStatus) {
+    return api
+      .get<LocationBooking[]>(`/parking-locations/${locationId}/bookings`, { params: { status } })
+      .then((res) => res.data)
+  },
+  forceCheckOut(id: string, payload?: CheckoutPayload) {
+    return api.patch<Booking>(`/bookings/${id}/force-check-out`, payload).then((res) => res.data)
   },
 }

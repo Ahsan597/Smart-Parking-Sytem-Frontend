@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { useFetch } from '../../hooks/useFetch'
 import { locationService } from '../../services/locationService'
 import { userService } from '../../services/userService'
@@ -315,6 +316,12 @@ function LocationsPage() {
                     )}
                   </div>
                   <div className="flex gap-2 sm:shrink-0">
+                    <Link
+                      to={`/admin/locations/${location.id}/bookings`}
+                      className="rounded-md border border-navy-600 px-3 py-1.5 text-sm text-slate-300 hover:border-navy-500 hover:text-white"
+                    >
+                      Bookings
+                    </Link>
                     <button
                       onClick={() => startEdit(location)}
                       className="rounded-md border border-navy-600 px-3 py-1.5 text-sm text-slate-300 hover:border-navy-500 hover:text-white"

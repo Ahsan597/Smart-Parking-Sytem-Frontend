@@ -15,3 +15,10 @@ export function computeEstimatedCost(checkinTime: string, hourlyRate: string, no
 export function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString()
 }
+
+export function formatElapsed(since: string, now: number = Date.now()): string {
+  const minutes = Math.max(0, Math.floor((now - new Date(since).getTime()) / 60000))
+  if (minutes < 60) return `${minutes}m`
+  const hours = Math.floor(minutes / 60)
+  return `${hours}h ${minutes % 60}m`
+}

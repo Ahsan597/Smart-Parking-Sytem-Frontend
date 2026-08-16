@@ -16,6 +16,7 @@ import PaymentHistoryPage from './pages/driver/PaymentHistoryPage'
 import AdminLayout from './pages/admin/AdminLayout'
 import ManagersPage from './pages/admin/ManagersPage'
 import LocationsPage from './pages/admin/LocationsPage'
+import AdminLocationBookingsPage from './pages/admin/LocationBookingsPage'
 import AdminAnalyticsPage from './pages/admin/AnalyticsPage'
 import ManagerLayout from './pages/manager/ManagerLayout'
 import MyLocationsPage from './pages/manager/MyLocationsPage'
@@ -63,6 +64,7 @@ function App() {
                 <Route index element={<Navigate to="managers" replace />} />
                 <Route path="managers" element={<ManagersPage />} />
                 <Route path="locations" element={<LocationsPage />} />
+                <Route path="locations/:locationId/bookings" element={<AdminLocationBookingsPage />} />
                 <Route path="analytics" element={<AdminAnalyticsPage />} />
                 <Route path="profile" element={<ProfilePage />} />
               </Route>

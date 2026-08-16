@@ -8,6 +8,7 @@ import { pricingService } from '../../services/pricingService'
 import FormField from '../../components/FormField'
 import ErrorAlert from '../../components/ErrorAlert'
 import Badge from '../../components/Badge'
+import LocationBookingsPanel from '../../components/LocationBookingsPanel'
 
 function LocationDetailPage() {
   const { locationId } = useParams<{ locationId: string }>()
@@ -200,6 +201,8 @@ function LocationDetailPage() {
           </div>
         )}
       </div>
+
+      <LocationBookingsPanel locationId={locationId!} />
     </div>
   )
 }
