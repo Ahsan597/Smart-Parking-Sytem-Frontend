@@ -8,7 +8,7 @@ function DriverLayout() {
   return (
     <div className="min-h-screen bg-navy-950">
       <AppHeader title="Parking Management System">
-        <nav className="flex gap-4 text-sm">
+        <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
           <NavLink to="/" end className={linkClass}>
             Dashboard
           </NavLink>
@@ -24,9 +24,12 @@ function DriverLayout() {
           <NavLink to="/payments" className={linkClass}>
             Payments
           </NavLink>
+          <NavLink to="/profile" className={linkClass}>
+            Profile
+          </NavLink>
         </nav>
       </AppHeader>
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
         <Outlet />
       </main>
     </div>

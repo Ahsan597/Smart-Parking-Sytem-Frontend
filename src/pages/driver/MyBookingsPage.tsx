@@ -124,9 +124,9 @@ function MyBookingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <h2 className="text-sm font-medium text-slate-400">My Bookings</h2>
-        <div className="w-48">
+        <div className="w-full sm:w-48">
           <SelectField
             id="statusFilter"
             label="Status"
@@ -153,7 +153,7 @@ function MyBookingsPage() {
         <div className="flex flex-col gap-3">
           {bookings.map((booking) => (
             <div key={booking.id} className="rounded-lg border border-navy-700 bg-navy-900 p-4">
-              <div className="flex items-start justify-between">
+              <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <p className="font-medium text-white">
                     {booking.slot.floor.parkingLocation.name} · Slot {booking.slot.slotCode}
@@ -164,7 +164,13 @@ function MyBookingsPage() {
               </div>
 
               {booking.status === 'RESERVED' && (
-                <div className="mt-2">
+                <div className="mt-2 flex flex-col gap-1">
+                  <p className="text-sm text-slate-500">Scheduled check-in: {formatDateTime(booking.startTime)}</p>
+                  {booking.expectedEndTime && (
+                    <p className="text-sm text-slate-500">
+                      Planned check-out: {formatDateTime(booking.expectedEndTime)}
+                    </p>
+                  )}
                   <CountdownBadge expiresAt={getReservationExpiry(booking.startTime)} />
                 </div>
               )}
@@ -175,7 +181,7 @@ function MyBookingsPage() {
                 </p>
               )}
 
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   onClick={() => setViewingBooking(booking)}
                   className="rounded-md border border-navy-600 px-3 py-1.5 text-sm text-slate-300 hover:border-navy-500 hover:text-white"
@@ -241,17 +247,21 @@ function MyBookingsPage() {
             </p>
             <p className="mt-2 text-slate-400">Status</p>
             <Badge label={viewingBooking.status} />
-            <p className="mt-2 text-slate-400">Reserved At</p>
+            <p className="mt-2 text-slate-400">Scheduled Check-In</p>
             <p className="text-white">{formatDateTime(viewingBooking.startTime)}</p>
+            <p className="mt-2 text-slate-400">Planned Check-Out</p>
+            <p className="text-white">
+              {viewingBooking.expectedEndTime ? formatDateTime(viewingBooking.expectedEndTime) : 'Not set'}
+            </p>
             {viewingBooking.actualCheckinTime && (
               <>
-                <p className="mt-2 text-slate-400">Checked In</p>
+                <p className="mt-2 text-slate-400">Actual Check-In</p>
                 <p className="text-white">{formatDateTime(viewingBooking.actualCheckinTime)}</p>
               </>
             )}
             {viewingBooking.actualCheckoutTime && (
               <>
-                <p className="mt-2 text-slate-400">Checked Out</p>
+                <p className="mt-2 text-slate-400">Actual Check-Out</p>
                 <p className="text-white">{formatDateTime(viewingBooking.actualCheckoutTime)}</p>
               </>
             )}

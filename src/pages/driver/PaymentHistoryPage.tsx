@@ -15,8 +15,8 @@ function PaymentHistoryPage() {
       ) : !payments || payments.length === 0 ? (
         <p className="text-slate-400">No payments yet.</p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-navy-700 bg-navy-900">
-          <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-lg border border-navy-700 bg-navy-900">
+          <table className="w-full min-w-150 text-left text-sm">
             <thead className="bg-navy-800 text-slate-400">
               <tr>
                 <th className="px-4 py-3 font-medium">Location / Slot</th>

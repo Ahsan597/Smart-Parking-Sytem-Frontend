@@ -5,6 +5,7 @@ import { useVehicles } from '../../hooks/useVehicles'
 import { vehicleService } from '../../services/vehicleService'
 import ErrorAlert from '../../components/ErrorAlert'
 import Badge from '../../components/Badge'
+import Modal from '../../components/Modal'
 import FormField from '../../components/FormField'
 import SelectField from '../../components/SelectField'
 import type { VehicleType } from '../../types/vehicle.types'
@@ -15,11 +16,20 @@ function Dashboard() {
   const { user } = useAuth()
   const { vehicles, isLoading, error, refetch } = useVehicles()
 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [vehicleNumber, setVehicleNumber] = useState('')
   const [vehicleType, setVehicleType] = useState<VehicleType>('CAR')
   const [vehicleBrand, setVehicleBrand] = useState('')
   const [vehicleModel, setVehicleModel] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  function openAddModal() {
+    setVehicleNumber('')
+    setVehicleType('CAR')
+    setVehicleBrand('')
+    setVehicleModel('')
+    setIsAddModalOpen(true)
+  }
 
   async function handleAddVehicle(event: FormEvent) {
     event.preventDefault()
@@ -31,10 +41,7 @@ function Dashboard() {
         vehicleBrand: vehicleBrand || undefined,
         vehicleModel: vehicleModel || undefined,
       })
-      setVehicleNumber('')
-      setVehicleType('CAR')
-      setVehicleBrand('')
-      setVehicleModel('')
+      setIsAddModalOpen(false)
       await refetch()
     } catch {
       // toast shown by the response interceptor
@@ -54,54 +61,16 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-navy-700 bg-navy-900 p-4">
-        <h2 className="mb-4 text-sm font-medium text-slate-400">Add Vehicle</h2>
-        <form onSubmit={handleAddVehicle} className="grid grid-cols-2 gap-4">
-          <FormField
-            id="vehicleNumber"
-            label="Vehicle Number"
-            value={vehicleNumber}
-            onChange={(e) => setVehicleNumber(e.target.value)}
-            required
-          />
-          <SelectField
-            id="vehicleType"
-            label="Vehicle Type"
-            value={vehicleType}
-            onChange={(e) => setVehicleType(e.target.value as VehicleType)}
-          >
-            {VEHICLE_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </SelectField>
-          <FormField
-            id="vehicleBrand"
-            label="Brand (optional)"
-            value={vehicleBrand}
-            onChange={(e) => setVehicleBrand(e.target.value)}
-          />
-          <FormField
-            id="vehicleModel"
-            label="Model (optional)"
-            value={vehicleModel}
-            onChange={(e) => setVehicleModel(e.target.value)}
-          />
-          <div className="col-span-2">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-md bg-electric-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-electric-600 disabled:opacity-60"
-            >
-              {isSubmitting ? 'Adding...' : 'Add Vehicle'}
-            </button>
-          </div>
-        </form>
-      </div>
-
       <div>
-        <h2 className="mb-3 text-sm font-medium text-slate-400">Your Vehicles</h2>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-medium text-slate-400">Your Vehicles</h2>
+          <button
+            onClick={openAddModal}
+            className="rounded-md bg-electric-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-electric-600"
+          >
+            Add Vehicle
+          </button>
+        </div>
 
         <ErrorAlert message={error} />
 
@@ -110,8 +79,8 @@ function Dashboard() {
         ) : vehicles.length === 0 ? (
           <p className="text-slate-400">No vehicles added yet.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-navy-700 bg-navy-900">
-            <table className="w-full text-left text-sm">
+          <div className="overflow-x-auto rounded-lg border border-navy-700 bg-navy-900">
+            <table className="w-full min-w-120 text-left text-sm">
               <thead className="bg-navy-800 text-slate-400">
                 <tr>
                   <th className="px-4 py-3 font-medium">Number</th>
@@ -134,6 +103,51 @@ function Dashboard() {
           </div>
         )}
       </div>
+
+      {isAddModalOpen && (
+        <Modal title="Add Vehicle" onClose={() => setIsAddModalOpen(false)}>
+          <form onSubmit={handleAddVehicle} className="flex flex-col gap-4">
+            <FormField
+              id="vehicleNumber"
+              label="Vehicle Number"
+              value={vehicleNumber}
+              onChange={(e) => setVehicleNumber(e.target.value)}
+              required
+            />
+            <SelectField
+              id="vehicleType"
+              label="Vehicle Type"
+              value={vehicleType}
+              onChange={(e) => setVehicleType(e.target.value as VehicleType)}
+            >
+              {VEHICLE_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </SelectField>
+            <FormField
+              id="vehicleBrand"
+              label="Brand (optional)"
+              value={vehicleBrand}
+              onChange={(e) => setVehicleBrand(e.target.value)}
+            />
+            <FormField
+              id="vehicleModel"
+              label="Model (optional)"
+              value={vehicleModel}
+              onChange={(e) => setVehicleModel(e.target.value)}
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="rounded-md bg-electric-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-electric-600 disabled:opacity-60"
+            >
+              {isSubmitting ? 'Adding...' : 'Add Vehicle'}
+            </button>
+          </form>
+        </Modal>
+      )}
     </div>
   )
 }

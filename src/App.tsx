@@ -5,6 +5,7 @@ import { RealtimeProvider } from './context/RealtimeProvider'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ProfilePage from './pages/ProfilePage'
 import DriverLayout from './pages/driver/DriverLayout'
 import Dashboard from './pages/driver/Dashboard'
 import SearchParkingPage from './pages/driver/SearchParkingPage'
@@ -15,6 +16,7 @@ import PaymentHistoryPage from './pages/driver/PaymentHistoryPage'
 import AdminLayout from './pages/admin/AdminLayout'
 import ManagersPage from './pages/admin/ManagersPage'
 import LocationsPage from './pages/admin/LocationsPage'
+import AdminLocationBookingsPage from './pages/admin/LocationBookingsPage'
 import AdminAnalyticsPage from './pages/admin/AnalyticsPage'
 import ManagerLayout from './pages/manager/ManagerLayout'
 import MyLocationsPage from './pages/manager/MyLocationsPage'
@@ -53,6 +55,7 @@ function App() {
                 <Route path="bookings" element={<MyBookingsPage />} />
                 <Route path="favorites" element={<MyFavoritesPage />} />
                 <Route path="payments" element={<PaymentHistoryPage />} />
+                <Route path="profile" element={<ProfilePage />} />
               </Route>
             </Route>
 
@@ -61,7 +64,9 @@ function App() {
                 <Route index element={<Navigate to="managers" replace />} />
                 <Route path="managers" element={<ManagersPage />} />
                 <Route path="locations" element={<LocationsPage />} />
+                <Route path="locations/:locationId/bookings" element={<AdminLocationBookingsPage />} />
                 <Route path="analytics" element={<AdminAnalyticsPage />} />
+                <Route path="profile" element={<ProfilePage />} />
               </Route>
             </Route>
 
@@ -71,6 +76,7 @@ function App() {
                 <Route path="locations/:locationId" element={<LocationDetailPage />} />
                 <Route path="floors/:floorId" element={<FloorDetailPage />} />
                 <Route path="analytics" element={<ManagerAnalyticsPage />} />
+                <Route path="profile" element={<ProfilePage />} />
               </Route>
             </Route>
 

@@ -21,7 +21,7 @@ export interface PaymentBooking {
   vehicleId: string
   slotId: string
   startTime: string
-  expectedEndTime: string
+  expectedEndTime: string | null
   actualCheckinTime: string | null
   actualCheckoutTime: string | null
   status: BookingStatus

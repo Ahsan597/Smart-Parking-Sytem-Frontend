@@ -35,10 +35,10 @@ function SearchParkingPage() {
     <div className="flex flex-col gap-8">
       <div className="rounded-lg border border-navy-700 bg-navy-900 p-4">
         <h2 className="mb-4 text-sm font-medium text-slate-400">Find Parking</h2>
-        <form onSubmit={handleSearch} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSearch} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField id="city" label="City" value={cityInput} onChange={(e) => setCityInput(e.target.value)} />
           <FormField id="name" label="Name" value={nameInput} onChange={(e) => setNameInput(e.target.value)} />
-          <label className="col-span-2 flex items-center gap-2 text-sm text-slate-300">
+          <label className="flex items-center gap-2 text-sm text-slate-300 sm:col-span-2">
             <input
               type="checkbox"
               checked={onlyAvailableInput}
@@ -47,7 +47,7 @@ function SearchParkingPage() {
             />
             Only show locations with available slots
           </label>
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <button
               type="submit"
               className="rounded-md bg-electric-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-electric-600"
@@ -70,7 +70,7 @@ function SearchParkingPage() {
               <div
                 key={location.id}
                 onClick={() => navigate(`/locations/${location.id}`)}
-                className="flex cursor-pointer items-center justify-between rounded-lg border border-navy-700 bg-navy-900 p-4 transition hover:border-navy-500"
+                className="flex cursor-pointer flex-col gap-3 rounded-lg border border-navy-700 bg-navy-900 p-4 transition hover:border-navy-500 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
                 <div>
                   <p className="font-medium text-white">{location.name}</p>
@@ -81,7 +81,7 @@ function SearchParkingPage() {
                     {location.pricing ? `Rs ${location.pricing.hourlyRate}/hr` : 'Pricing not set'}
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 sm:shrink-0">
                   <span
                     className={`rounded-full px-2 py-1 text-xs font-medium ${
                       location.availableSlots > 0

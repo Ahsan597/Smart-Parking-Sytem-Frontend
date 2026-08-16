@@ -11,18 +11,9 @@ better. Organized by priority, not by phase.
 
 HIGH PRIORITY
 
-  - Not usable on a phone. The original goal was "web and mobile," but right
-    now every screen is laid out for desktop only — on a phone, tables and
-    multi-column forms will be cramped or cut off. For a parking app, most
-    real users will be on their phone, so this matters a lot.
-
   - No way to recover a forgotten password. If a user forgets their
     password, there is currently no "forgot password" option — they're
     stuck.
-
-  - A driver can't edit their profile or their vehicle details once added.
-    You can add a vehicle and view your profile, but there's no screen to
-    correct a typo in a plate number or update your phone number.
 
   - Deleting a vehicle that has ever been used for a booking fails with a
     confusing technical error instead of a clear explanation. It should

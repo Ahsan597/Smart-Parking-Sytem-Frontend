@@ -83,7 +83,7 @@ function FloorDetailPage() {
 
       <div className="rounded-lg border border-navy-700 bg-navy-900 p-4">
         <h3 className="mb-4 text-sm font-medium text-slate-400">Add Slot</h3>
-        <form onSubmit={handleAddSlot} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleAddSlot} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField
             id="slotCode"
             label="Slot Code"
@@ -103,7 +103,7 @@ function FloorDetailPage() {
               </option>
             ))}
           </SelectField>
-          <div className="col-span-2 flex items-center gap-4">
+          <div className="flex items-center gap-4 sm:col-span-2">
             <button
               type="submit"
               disabled={isSubmitting}
@@ -120,8 +120,8 @@ function FloorDetailPage() {
         {floor.slots.length === 0 ? (
           <p className="text-slate-400">No slots yet.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-navy-700 bg-navy-900">
-            <table className="w-full text-left text-sm">
+          <div className="overflow-x-auto rounded-lg border border-navy-700 bg-navy-900">
+            <table className="w-full min-w-120 text-left text-sm">
               <thead className="bg-navy-800 text-slate-400">
                 <tr>
                   <th className="px-4 py-3 font-medium">Code</th>

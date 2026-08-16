@@ -13,7 +13,10 @@ import Modal from '../../components/Modal'
 import FormField from '../../components/FormField'
 import SelectField from '../../components/SelectField'
 import FavoriteButton from '../../components/FavoriteButton'
+import { MAX_CHECKIN_ADVANCE_MINUTES, toDatetimeLocalValue } from '../../utils/bookingTime'
 import type { AvailableSlot } from '../../types/booking.types'
+
+type ReserveMode = 'now' | 'schedule'
 
 function LocationSlotsPage() {
   const { locationId } = useParams<{ locationId: string }>()
@@ -37,24 +40,70 @@ function LocationSlotsPage() {
 
   const [reservingSlot, setReservingSlot] = useState<AvailableSlot | null>(null)
   const [vehicleId, setVehicleId] = useState('')
-  const [expectedDurationMinutes, setExpectedDurationMinutes] = useState('60')
+  const [reserveMode, setReserveMode] = useState<ReserveMode>('now')
+  const [checkInInput, setCheckInInput] = useState('')
+  const [checkInMin, setCheckInMin] = useState('')
+  const [checkInMax, setCheckInMax] = useState('')
+  const [checkOutInput, setCheckOutInput] = useState('')
+  const [reserveFormError, setReserveFormError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   function openReserveModal(slot: AvailableSlot) {
     setReservingSlot(slot)
     setVehicleId(vehicles?.[0]?.id ?? '')
-    setExpectedDurationMinutes('60')
+    setReserveMode('now')
+    const now = new Date()
+    const max = new Date(now.getTime() + MAX_CHECKIN_ADVANCE_MINUTES * 60000)
+    setCheckInMin(toDatetimeLocalValue(now))
+    setCheckInMax(toDatetimeLocalValue(max))
+    setCheckInInput(toDatetimeLocalValue(now))
+    setCheckOutInput('')
+    setReserveFormError(null)
   }
 
   async function handleReserve(event: FormEvent) {
     event.preventDefault()
     if (!reservingSlot) return
+    setReserveFormError(null)
+
+    const now = Date.now()
+    let checkInIso: string
+    if (reserveMode === 'now') {
+      checkInIso = new Date().toISOString()
+    } else {
+      if (!checkInInput) {
+        setReserveFormError('Pick a check-in time.')
+        return
+      }
+      const checkInMs = new Date(checkInInput).getTime()
+      if (checkInMs < now - 60000) {
+        setReserveFormError('Check-in time cannot be in the past.')
+        return
+      }
+      if (checkInMs > now + MAX_CHECKIN_ADVANCE_MINUTES * 60000) {
+        setReserveFormError(`Check-in time cannot be more than ${MAX_CHECKIN_ADVANCE_MINUTES} minutes from now.`)
+        return
+      }
+      checkInIso = new Date(checkInInput).toISOString()
+    }
+
+    let checkOutIso: string | undefined
+    if (checkOutInput) {
+      const checkOutMs = new Date(checkOutInput).getTime()
+      if (checkOutMs <= new Date(checkInIso).getTime()) {
+        setReserveFormError('Check-out time must be after check-in time.')
+        return
+      }
+      checkOutIso = new Date(checkOutInput).toISOString()
+    }
+
     setIsSubmitting(true)
     try {
       await bookingService.create({
         slotId: reservingSlot.id,
         vehicleId,
-        expectedDurationMinutes: Number(expectedDurationMinutes),
+        checkInTime: checkInIso,
+        checkOutTime: checkOutIso,
       })
       setReservingSlot(null)
       await refetchSlots()
@@ -122,7 +171,7 @@ function LocationSlotsPage() {
                   {floor.slots.map((slot) => (
                     <div
                       key={slot.id}
-                      className="flex w-40 flex-col gap-2 rounded-lg border border-navy-700 bg-navy-900 p-3"
+                      className="flex w-32 flex-col gap-2 rounded-lg border border-navy-700 bg-navy-900 p-3 sm:w-40"
                     >
                       <p className="font-mono text-white">{slot.slotCode}</p>
                       <p className="text-xs text-slate-400 capitalize">{slot.slotType}</p>
@@ -166,17 +215,56 @@ function LocationSlotsPage() {
                   </option>
                 ))}
               </SelectField>
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-medium text-slate-300">When are you checking in?</span>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 text-sm text-slate-300">
+                    <input
+                      type="radio"
+                      name="reserveMode"
+                      checked={reserveMode === 'now'}
+                      onChange={() => setReserveMode('now')}
+                      className="h-4 w-4 border-navy-600 bg-navy-800"
+                    />
+                    Check in now
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-slate-300">
+                    <input
+                      type="radio"
+                      name="reserveMode"
+                      checked={reserveMode === 'schedule'}
+                      onChange={() => setReserveMode('schedule')}
+                      className="h-4 w-4 border-navy-600 bg-navy-800"
+                    />
+                    Pick a time
+                  </label>
+                </div>
+              </div>
+
+              {reserveMode === 'schedule' && (
+                <FormField
+                  id="checkInInput"
+                  label={`Check-In Time (within ${MAX_CHECKIN_ADVANCE_MINUTES} minutes)`}
+                  type="datetime-local"
+                  min={checkInMin}
+                  max={checkInMax}
+                  value={checkInInput}
+                  onChange={(e) => setCheckInInput(e.target.value)}
+                  required
+                />
+              )}
+
               <FormField
-                id="expectedDurationMinutes"
-                label="Expected Duration (minutes, 15–1440)"
-                type="number"
-                min={15}
-                max={1440}
-                step={15}
-                value={expectedDurationMinutes}
-                onChange={(e) => setExpectedDurationMinutes(e.target.value)}
-                required
+                id="checkOutInput"
+                label="Planned Check-Out (optional)"
+                type="datetime-local"
+                min={reserveMode === 'schedule' ? checkInInput || checkInMin : checkInMin}
+                value={checkOutInput}
+                onChange={(e) => setCheckOutInput(e.target.value)}
               />
+
+              <ErrorAlert message={reserveFormError} />
+
               <button
                 type="submit"
                 disabled={isSubmitting}
