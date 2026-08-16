@@ -8,7 +8,7 @@ import ErrorAlert from './ErrorAlert'
 import Badge from './Badge'
 import Modal from './Modal'
 import SelectField from './SelectField'
-import { formatElapsed } from '../utils/bookingTime'
+import { formatElapsed, formatDateTime } from '../utils/bookingTime'
 import type { BookingStatus, LocationBooking } from '../types/booking.types'
 import type { PaymentMethod } from '../types/payment.types'
 
@@ -101,6 +101,16 @@ function LocationBookingsPanel({ locationId }: { locationId: string }) {
                   Slot {booking.slot.slotCode} · {booking.slot.floor.name}
                 </p>
                 <p className="text-sm text-slate-500">{booking.user.phone ?? booking.user.email}</p>
+                {booking.status === 'RESERVED' && (
+                  <>
+                    <p className="mt-1 text-sm text-slate-500">Scheduled check-in: {formatDateTime(booking.startTime)}</p>
+                    {booking.expectedEndTime && (
+                      <p className="text-sm text-slate-500">
+                        Planned check-out: {formatDateTime(booking.expectedEndTime)}
+                      </p>
+                    )}
+                  </>
+                )}
                 {booking.status === 'CHECKED_IN' && booking.actualCheckinTime && (
                   <p className="mt-1 text-sm text-slate-500">Parked for {formatElapsed(booking.actualCheckinTime)}</p>
                 )}

@@ -164,7 +164,13 @@ function MyBookingsPage() {
               </div>
 
               {booking.status === 'RESERVED' && (
-                <div className="mt-2">
+                <div className="mt-2 flex flex-col gap-1">
+                  <p className="text-sm text-slate-500">Scheduled check-in: {formatDateTime(booking.startTime)}</p>
+                  {booking.expectedEndTime && (
+                    <p className="text-sm text-slate-500">
+                      Planned check-out: {formatDateTime(booking.expectedEndTime)}
+                    </p>
+                  )}
                   <CountdownBadge expiresAt={getReservationExpiry(booking.startTime)} />
                 </div>
               )}
@@ -241,17 +247,21 @@ function MyBookingsPage() {
             </p>
             <p className="mt-2 text-slate-400">Status</p>
             <Badge label={viewingBooking.status} />
-            <p className="mt-2 text-slate-400">Reserved At</p>
+            <p className="mt-2 text-slate-400">Scheduled Check-In</p>
             <p className="text-white">{formatDateTime(viewingBooking.startTime)}</p>
+            <p className="mt-2 text-slate-400">Planned Check-Out</p>
+            <p className="text-white">
+              {viewingBooking.expectedEndTime ? formatDateTime(viewingBooking.expectedEndTime) : 'Not set'}
+            </p>
             {viewingBooking.actualCheckinTime && (
               <>
-                <p className="mt-2 text-slate-400">Checked In</p>
+                <p className="mt-2 text-slate-400">Actual Check-In</p>
                 <p className="text-white">{formatDateTime(viewingBooking.actualCheckinTime)}</p>
               </>
             )}
             {viewingBooking.actualCheckoutTime && (
               <>
-                <p className="mt-2 text-slate-400">Checked Out</p>
+                <p className="mt-2 text-slate-400">Actual Check-Out</p>
                 <p className="text-white">{formatDateTime(viewingBooking.actualCheckoutTime)}</p>
               </>
             )}

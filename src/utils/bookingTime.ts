@@ -1,5 +1,14 @@
 const RESERVATION_EXPIRY_MINUTES = 15
 
+// A reservation's checkInTime must be "now" (small tolerance) up to this many minutes in the future.
+export const MAX_CHECKIN_ADVANCE_MINUTES = 120
+
+// Formats a Date for an <input type="datetime-local"> value/min/max attribute (local time, no timezone).
+export function toDatetimeLocalValue(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
 // Reservations auto-expire 15 minutes after startTime if never checked in (enforced by a backend cron job).
 export function getReservationExpiry(startTime: string): string {
   return new Date(new Date(startTime).getTime() + RESERVATION_EXPIRY_MINUTES * 60000).toISOString()
