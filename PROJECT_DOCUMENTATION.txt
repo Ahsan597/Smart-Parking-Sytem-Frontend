@@ -1,0 +1,122 @@
+================================================================================
+SMART PARKING MANAGEMENT SYSTEM — PROJECT DOCUMENTATION
+================================================================================
+Last updated: 2026-08-14
+
+--------------------------------------------------------------------------------
+1. OVERVIEW
+--------------------------------------------------------------------------------
+A parking management platform with three roles, each on their own dashboard:
+
+  - Driver            — finds, reserves, and pays for parking
+  - Parking Manager    — runs the day-to-day of their assigned location(s)
+  - Super Admin        — oversees the whole platform
+
+--------------------------------------------------------------------------------
+2. WHAT'S IMPLEMENTED, BY PHASE
+--------------------------------------------------------------------------------
+
+PHASE 1 — Core Foundation
+  - Register / Login, session stays active across refresh
+  - View own profile
+  - Add / view vehicles
+
+PHASE 2 — Parking Infrastructure + Roles
+  - Each role lands on and is confined to its own dashboard after login
+  - Admin: create Parking Manager accounts, view the list of managers
+  - Admin: create / edit / delete parking locations, assign a manager to one
+  - Manager: view locations assigned to them, set up floors and parking slots
+  - Manager: change a slot's status by hand (available/reserved/occupied/
+    under maintenance)
+
+PHASE 3 — Booking System + Pricing
+  - Pricing: hourly (required) / daily / monthly rates, set by admin (right
+    after creating a location) or by the assigned manager
+  - Driver: search locations by city or name, see available-slot count and
+    pricing per location
+  - Driver: view a location's available slots by floor, reserve one (pick a
+    vehicle + expected duration)
+  - Driver: My Bookings — filter by status, with Cancel / Check-In / Check-Out
+    actions shown only when valid for that booking; a countdown shows how
+    long a reservation has left before it expires; an estimated cost is shown
+    before checking out
+  - Checking out auto-calculates the charge based on actual time parked
+    (rounded up to the next full hour), and creates a payment record
+
+PHASE 4 — Real-Time + Analytics
+  - Notification bell (all roles): unread badge, dropdown list, mark one or
+    all as read, new notifications appear instantly without refreshing
+  - Driver: favorite/unfavorite a location, My Favorites page; get notified
+    automatically when a slot opens up at a favorited location
+  - Driver: Payment History page (amount, method, date, which location/slot)
+  - Slot availability updates instantly on screen for anyone viewing a
+    location's slots — driver browsing that location, or the manager
+    managing it — with no refresh needed
+  - Admin + Manager: Analytics dashboard — revenue (with an optional date
+    range), occupancy breakdown per location (available/reserved/occupied/
+    maintenance + occupancy rate), and a peak-hours chart showing busiest
+    times of day. Manager sees only their own locations; Admin can pick any
+    location or view the whole platform combined.
+
+--------------------------------------------------------------------------------
+3. FEATURE CHECKLIST BY ROLE
+--------------------------------------------------------------------------------
+
+DRIVER
+  [x] Register / login, manage profile
+  [x] Add / manage vehicles
+  [x] Search parking by city / name
+  [x] See available-slot count and pricing per location
+  [x] View available slots at a location, updated live while browsing
+  [x] Reserve a slot (vehicle + expected duration)
+  [x] Cancel a reservation
+  [x] Check in / check out, auto-charged for actual time parked
+  [x] Booking history with status filter
+  [x] Favorite locations, list of favorites
+  [x] Notification when a favorited location frees up a slot
+  [x] Payment history / receipts
+  [x] Live notification bell (bookings, cancellations, expiry, favorites)
+  [ ] A reminder notification sent shortly before a reservation expires —
+      not implemented; what exists today is a countdown shown on the
+      booking itself, plus a notification after it has already expired
+
+PARKING MANAGER
+  [x] View locations assigned to them
+  [x] Set up floors and slots for their locations
+  [x] Set / update pricing for their locations
+  [x] Change a slot's status by hand, with live updates for anyone watching
+  [x] Revenue report for their locations (optional date range)
+  [x] Occupancy report for their locations
+  [x] Peak-hours report for their locations
+  [~] A live "how full is my location right now" dashboard view — the slot
+      list itself updates instantly, but the occupancy report has to be
+      opened/refreshed to see the latest numbers, it doesn't update itself
+      while it's open
+
+SUPER ADMIN
+  [x] Create Parking Manager accounts, view the list of managers
+  [x] Add new parking locations, assign/reassign a manager
+  [x] Edit a location (details, manager, status), set its pricing
+  [x] Delete a location
+  [x] Platform-wide revenue, occupancy, and peak-hours reports, either for
+      one chosen location or combined across the whole platform
+  [ ] Set up floors/slots on a location directly as admin — today an admin
+      would need to do this through the manager's tools instead; there's no
+      admin-side screen for it yet
+  [ ] Change any user's role in a general way — currently, manager accounts
+      are created directly as managers, which covers the main real-world
+      need, but there's no screen to promote/demote an arbitrary user
+
+--------------------------------------------------------------------------------
+4. KNOWN GAPS / THINGS TO KNOW BEFORE DEMOING
+--------------------------------------------------------------------------------
+  - Admin's location list currently only shows locations that are active.
+    Once a location is set to inactive, admin loses an easy way to find it
+    again and reactivate it.
+  - "Live updates" apply to: the slot list on a location's page, and
+    notifications. They do NOT apply to: the available-slot count shown on
+    the search results list (only refreshes when you search again), or the
+    analytics dashboards (only refresh when opened).
+  - The two Super Admin items above (floor/slot setup, general role change)
+    are the only planned admin abilities without their own screen yet.
+================================================================================

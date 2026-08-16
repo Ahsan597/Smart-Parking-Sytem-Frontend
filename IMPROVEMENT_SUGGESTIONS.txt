@@ -1,0 +1,116 @@
+================================================================================
+SMART PARKING MANAGEMENT SYSTEM — ISSUES & SUGGESTIONS
+================================================================================
+Last updated: 2026-08-14
+A plain-language list of what's worth fixing, and what would make the product
+better. Organized by priority, not by phase.
+
+--------------------------------------------------------------------------------
+1. ISSUES WORTH FIXING
+--------------------------------------------------------------------------------
+
+HIGH PRIORITY
+
+  - Not usable on a phone. The original goal was "web and mobile," but right
+    now every screen is laid out for desktop only — on a phone, tables and
+    multi-column forms will be cramped or cut off. For a parking app, most
+    real users will be on their phone, so this matters a lot.
+
+  - No way to recover a forgotten password. If a user forgets their
+    password, there is currently no "forgot password" option — they're
+    stuck.
+
+  - A driver can't edit their profile or their vehicle details once added.
+    You can add a vehicle and view your profile, but there's no screen to
+    correct a typo in a plate number or update your phone number.
+
+  - Deleting a vehicle that has ever been used for a booking fails with a
+    confusing technical error instead of a clear explanation. It should
+    either explain why ("this vehicle has booking history and can't be
+    removed") or offer an alternative like archiving it instead.
+
+  - If a login session expires while someone is using the app, they get
+    silently logged out with no explanation — their next click just bounces
+    them to the login page. A clear message ("your session expired, please
+    log in again") would avoid confusion.
+
+  - Once a location is marked inactive, admin has no way to find it again to
+    reactivate it — it just disappears from the location list.
+
+MEDIUM PRIORITY
+
+  - Managers and admins can't see who's currently parked where. They can see
+    a slot's status (available/reserved/occupied), but not which driver
+    reserved it, when, or step in if there's a problem (e.g. manually check
+    someone out). This is a real gap for day-to-day operations.
+
+  - Admin can't set up floors and parking slots for a location directly —
+    they'd have to do it through the manager's tools instead. Since admin is
+    supposed to have full control, this should work directly too.
+
+  - Admin can't change an existing user's role in general — only when
+    creating a brand-new manager account. There's no way to, say, promote an
+    existing driver to manager, or demote a manager.
+
+  - Drivers only get told a reservation expired after the fact. A heads-up
+    a few minutes before it's about to expire (so they can still check in
+    time) would prevent avoidable cancellations.
+
+  - Parking spot type doesn't affect price. A VIP or EV charging spot costs
+    the same as a normal spot at the same location — pricing is only set per
+    location, not per spot type, which likely isn't the intent.
+
+LOWER PRIORITY / POLISH
+
+  - Delete confirmations use the browser's plain pop-up instead of a dialog
+    that matches the app's look.
+  - Pages just say "Loading..." instead of a nicer loading placeholder.
+  - Lists (managers, locations, bookings) have no search or paging — fine
+    now, but will get unwieldy as the data grows.
+  - Currency is hard-coded ("Rs") — would need to be configurable to sell
+    this outside Pakistan.
+  - There's no automated way to check that a future change hasn't broken
+    something already working — every check has been manual so far.
+  - Login credentials are stored in a way that's a bit more exposed to
+    attack than best practice — worth hardening before this ever handles
+    real money at scale.
+
+--------------------------------------------------------------------------------
+2. SUGGESTIONS TO MAKE THE PRODUCT BETTER
+--------------------------------------------------------------------------------
+
+  - Show parking locations on a map, not just a list. The location
+    coordinates are already collected — showing pins on a map (with
+    "nearest to me") would make finding parking much easier than a
+    city/name search box.
+
+  - Let managers/admins see a live list of current bookings and check-ins at
+    a location — not just slot colors — with the ability to intervene
+    (manually check someone in/out, cancel a stuck booking).
+
+  - Let a manager create a booking on the spot for a walk-in driver who
+    doesn't have the app — common in real parking lots.
+
+  - Add a monthly/subscription pass a driver can actually buy and use.
+    Monthly pricing is already collected from managers, but there's no way
+    for a driver to purchase or redeem one yet — right now it's set up but
+    unused.
+
+  - Profile picture and vehicle photo upload, so profiles and vehicle lists
+    feel more complete and easier to recognize.
+
+  - Downloadable/printable receipts for completed bookings.
+
+  - Email verification on signup, so accounts are tied to a real, reachable
+    email.
+
+  - A single "all users" screen for admin, not just managers — useful for
+    support and oversight.
+
+  - Multi-language support, if the platform is meant to serve non-English
+    speaking users/drivers.
+
+  - Notify a driver in advance (not just after the fact) when their
+    reservation is about to expire, with a one-tap way to check in
+    immediately from the notification.
+================================================================================

@@ -12,6 +12,9 @@ function ManagerLayout() {
           <NavLink to="/manager" end className={linkClass}>
             My Locations
           </NavLink>
+          <NavLink to="/manager/analytics" className={linkClass}>
+            Analytics
+          </NavLink>
         </nav>
       </AppHeader>
       <main className="mx-auto max-w-5xl px-6 py-10">
