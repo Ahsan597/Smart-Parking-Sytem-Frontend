@@ -1,0 +1,348 @@
+================================================================================
+SMART PARKING MANAGEMENT SYSTEM — DETAILED PROJECT DOCUMENTATION
+================================================================================
+Last updated: 2026-08-16
+Purpose: a complete, plain-language walkthrough of what this system does and
+how it behaves — every feature, every role, every rule — written so it can be
+understood on its own years from now, without needing to read any code.
+
+================================================================================
+1. WHAT THIS SYSTEM IS
+================================================================================
+A parking management platform that connects three kinds of people:
+
+  - A DRIVER, who wants to find, reserve, and pay for a parking spot.
+  - A PARKING MANAGER, who runs the day-to-day of one or more specific
+    parking locations they've been put in charge of.
+  - A SUPER ADMIN, who oversees the whole platform — every location, every
+    manager, every driver, and platform-wide numbers.
+
+Each of the three signs in and lands on their own dashboard, built around
+what that role actually needs to do. A driver never sees admin tools; a
+manager only ever sees their own assigned locations; the admin sees and can
+reach into everything.
+
+The physical world this models: a PARKING LOCATION (e.g. "Parking A" on Main
+Blvd) is made up of one or more FLOORS, and each floor has individual
+PARKING SLOTS. A slot has a type (Normal, VIP, EV charging, or Disabled
+parking) and, at any moment, a status: Available, Reserved, Occupied, or
+Under Maintenance.
+
+================================================================================
+2. ACCOUNTS
+================================================================================
+
+REGISTRATION AND LOGIN
+Anyone can create their own account by registering with a full name, email,
+password, and optional phone number — this always creates a DRIVER account.
+Manager and Admin accounts are not self-registered; see their sections
+below for how those get created. Logging in keeps you signed in across
+browser refreshes until you log out.
+
+PROFILE
+Every signed-in person — driver, manager, or admin — has a "Profile" page
+where they can update their full name, phone number, and a profile picture
+(entered as an image link). Email cannot be changed here. Saving updates
+take effect immediately everywhere your name is shown (e.g. the header).
+
+ROLES
+There are exactly three roles: Driver, Parking Manager, and Super Admin. A
+person's role decides which part of the platform they land on after login
+and what they're allowed to do. Today, a driver cannot be promoted to
+manager through the interface — a manager account is created directly by an
+admin as a manager from the start (see Section 4).
+
+================================================================================
+3. THE DRIVER EXPERIENCE
+================================================================================
+
+3.1 DASHBOARD
+After logging in, a driver lands on their Dashboard: a summary card showing
+who they're logged in as, and a list of their vehicles. Vehicles are added
+through an "Add Vehicle" button that opens a small popup form — vehicle
+number/plate, type (Car, Bike, SUV, Truck, Van, or EV), and optional brand
+and model. A driver needs at least one vehicle on file before they can
+reserve any parking slot.
+
+3.2 FINDING PARKING
+The "Find Parking" page lets a driver search parking locations by city
+and/or name, with an optional filter to only show locations that currently
+have at least one available slot. Each result shows the location's name,
+address, hourly price (or "Pricing not set" if the manager/admin hasn't
+configured pricing yet), and how many slots are available right now. Each
+location can be starred as a favorite directly from this list (see 3.6).
+
+3.3 VIEWING A LOCATION'S SLOTS
+Opening a location shows its available slots grouped by floor, along with
+the location's pricing. This view updates itself live — if another driver
+reserves the last available slot while you're looking at the page, it
+disappears from the list automatically, with no need to refresh.
+
+3.4 RESERVING A SLOT
+Clicking "Reserve" on a slot opens the reservation form:
+  - Pick which of your vehicles this reservation is for.
+  - Choose when you're checking in: either "Check in now" (the default —
+    you're arriving immediately), or "Pick a time" to schedule a check-in
+    up to 2 hours from now (useful if you're on your way but not there yet).
+  - Optionally, set a planned check-out time if you already know when
+    you'll be leaving. This is entirely optional — if you don't know yet,
+    leave it blank. You are never charged based on this planned time; it's
+    just for your own and the manager's reference. What you're actually
+    charged is always based on the real time between when you check in and
+    when you check out (see 3.7).
+
+A vehicle can only have ONE active reservation at a time (either "Reserved"
+or "Checked In") — trying to reserve a second slot with a vehicle that
+already has one in progress is rejected with a clear message.
+
+3.5 IF YOU DON'T CHECK IN IN TIME
+A reservation automatically expires — and the slot becomes available for
+someone else — if you don't check in within 15 minutes of your scheduled
+check-in time. If you chose "Check in now," that's 15 minutes from the
+moment you reserved. If you scheduled a check-in for later, the 15-minute
+window starts at that scheduled time, not at the moment you made the
+reservation — so booking now for a check-in two hours from now does not
+expire in 15 minutes, it expires 15 minutes after that two-hour mark if you
+still haven't checked in. Your booking list shows a live countdown for any
+reservation that hasn't been checked into yet.
+
+3.6 FAVORITES
+Any location can be starred as a favorite from the search results or its
+own page. The "Favorites" page lists everything you've starred, with quick
+access to view its slots. Favoriting a location has one automatic benefit:
+you get a notification the moment a slot frees up there — you don't have to
+keep checking back yourself.
+
+3.7 CHECKING IN, CHECKING OUT, AND BEING CHARGED
+"My Bookings" lists every reservation you've ever made, filterable by
+status, with only the actions that make sense for each one:
+  - A RESERVED booking can be Checked In or Cancelled.
+  - A CHECKED_IN booking can be Checked Out.
+  - Anything else (Completed, Cancelled, Expired) is just a historical
+    record with no actions.
+
+Checking in marks the exact real time you arrived. Checking out marks the
+exact real time you left, and this is the moment you're actually charged:
+the system calculates how many hours you were parked, ALWAYS ROUNDING UP TO
+THE NEXT FULL HOUR (so 1 hour and 5 minutes parked bills as 2 hours; the
+minimum charge is always 1 hour even for a very short stay), multiplied by
+that location's hourly rate. You choose a payment method at checkout (Cash,
+JazzCash, Easypaisa, or Stripe) — no real payment processing happens, this
+is a record-keeping choice, not a live charge. While checking out, the
+screen shows a live-updating estimate of what you'll be charged based on
+time elapsed so far, updating every second, so there are no surprises.
+
+Checkout will refuse to complete if the location's manager/admin hasn't set
+pricing yet — you'll see a clear error rather than being charged nothing or
+an incorrect amount.
+
+3.8 CANCELLING
+A reservation can be cancelled any time before you check in. Cancelling
+immediately frees the slot back up for other drivers. Once you've checked
+in, cancelling is no longer available — checking out is the only path
+forward from there.
+
+3.9 BOOKING DETAILS
+Clicking "View" on any booking opens a full detail popup: the location and
+address, which floor and slot, your vehicle, current status, the scheduled
+check-in time, the planned check-out time (or "Not set" if you didn't give
+one), the actual check-in and check-out times once they've happened, and
+payment details once a payment exists.
+
+3.10 PAYMENT HISTORY
+A dedicated "Payments" page lists every completed payment — amount, payment
+method, date, and which location/slot it was for — as a running receipt
+history.
+
+3.11 NOTIFICATIONS
+A bell icon (visible on every page, for every role) shows a badge with your
+number of unread notifications. Opening it lists them all, newest first,
+with the ability to mark one or all as read. New notifications appear
+instantly the moment they happen — no refresh needed — and pop up as a
+brief toast message too. A driver gets notified automatically when:
+  - A reservation is confirmed.
+  - A reservation is cancelled.
+  - You're checked out (includes the amount charged).
+  - A reservation expires because you didn't check in on time.
+  - A slot frees up at one of your favorited locations.
+
+================================================================================
+4. THE PARKING MANAGER EXPERIENCE
+================================================================================
+
+A manager only ever sees the location(s) an admin has specifically assigned
+to them — never anyone else's. Manager accounts are created by an admin
+(Section 5), not self-registered.
+
+4.1 MY LOCATIONS
+The manager's landing page lists every location assigned to them. Opening
+one takes them into that location's management view.
+
+4.2 PRICING
+Every location needs pricing configured before checkout can ever succeed
+there. A manager sets an hourly rate (required) and, optionally, a daily
+rate and a monthly rate, for each of their locations. If pricing hasn't
+been set yet, this is called out clearly with a warning so it doesn't get
+missed — checkout will fail for drivers at that location until it's done.
+
+4.3 FLOORS AND SLOTS
+A manager builds out the physical layout of their location: adding floors
+(a name and a floor number), and within each floor, adding individual slots
+(a slot code like "A1", and a type — Normal, VIP, EV, or Disabled). Floors
+and slots can also be deleted (deleting a floor removes all of its slots
+too).
+
+4.4 MANAGING SLOT STATUS BY HAND
+On a floor's slot list, a manager can directly change any slot's status
+via a dropdown — Available, Reserved, Occupied, or Under Maintenance. This
+is meant for situations outside the normal booking flow, most importantly
+marking a slot as "Under Maintenance" when it's physically out of service.
+
+Important behavior to understand: manually changing a slot's status this
+way does NOT interact with any booking or create any charge. If a driver is
+actually checked in and a manager manually flips that slot back to
+"Available" instead of properly checking the driver out, the driver's
+booking is left in an inconsistent state and no payment is recorded for
+their stay. The correct way to end an active driver's stay is the "Currently
+Parked" / force check-out tool described next — not the status dropdown.
+
+4.5 SEEING WHO'S ACTUALLY PARKED, AND STEPPING IN
+Every location's page has a "Bookings at this location" section, defaulting
+to showing who's Currently Parked (checked in right now) but filterable to
+see Reserved, Completed, Cancelled, or Expired bookings too. For each one,
+the manager sees the driver's name, phone/email, vehicle, which slot, and
+(for anyone currently parked) how long they've been there; for a
+reservation, the scheduled check-in and planned check-out times are shown
+too. This list also updates live as bookings change.
+
+If a driver needs to be checked out on their behalf — phone died, they
+forgot, there's a dispute — the manager can use "Force Check-Out" directly
+from this list. It works exactly like the driver checking themselves out:
+a confirmation step, a choice of payment method, and the same real-time-based
+billing math, creating a proper payment record. This is the correct tool for
+ending someone's stay, not the manual status dropdown.
+
+4.6 ANALYTICS
+A manager has an Analytics page scoped automatically to only their own
+locations (with an optional date range and a way to narrow to just one of
+their locations):
+  - Revenue: total amount earned and number of payments.
+  - Occupancy: for each location, a breakdown of how many slots are
+    currently Available / Reserved / Occupied / Under Maintenance, plus an
+    overall occupancy percentage.
+  - Peak Hours: a chart of check-ins by hour of day (0–23), showing when
+    demand is busiest.
+
+================================================================================
+5. THE SUPER ADMIN EXPERIENCE
+================================================================================
+
+The admin can do everything a manager can (see Section 4's tools, reachable
+the same way once viewing a location's bookings — see 5.4), plus platform-
+wide administration.
+
+5.1 MANAGING PARKING MANAGERS
+The admin creates every manager account directly, via an "Add Manager"
+popup — full name, email, password, and optional phone. This is the only
+way a manager account comes into existence; there's no self-registration or
+promotion path today. The admin's Managers page lists everyone currently
+holding that role.
+
+5.2 MANAGING LOCATIONS
+The admin adds every new parking location to the platform via an "Add
+Location" popup — name, address, city, map coordinates, and optionally
+assigning it to one of the existing managers right away (or leaving it
+unassigned for now). Right after creating a location, the admin is dropped
+straight into that location's edit view specifically so that setting its
+pricing isn't a step that gets forgotten.
+
+From the Locations list, each existing location can be:
+  - Edited — name, address, city, its assigned manager (reassigned to a
+    different manager, or unassigned), its status (Active/Inactive), and
+    its pricing, all from one edit panel.
+  - Deleted — permanently, with a confirmation step first.
+
+Only locations currently set to Active appear in this list. If a location
+is switched to Inactive, it currently disappears from the admin's own list
+too, with no way to browse back to it and switch it active again through
+the interface — see the separate improvement-suggestions document for this
+known limitation.
+
+5.3 PLATFORM-WIDE ANALYTICS
+The admin's Analytics page mirrors the manager's (revenue, occupancy, peak
+hours — Section 4.6), but defaults to combining every location on the
+platform, with the option to pick any single location to drill into
+instead — not just their own.
+
+5.4 VIEWING BOOKINGS AND FORCE CHECK-OUT, PLATFORM-WIDE
+From the Locations list, each location has a "Bookings" link taking the
+admin into the exact same "who's currently parked here" view and
+force-check-out tool a manager has for their own locations (Section 4.5) —
+except the admin can open this for ANY location on the platform, not just
+ones assigned to them.
+
+5.5 WHAT THE ADMIN CANNOT DO YET
+Two things a Super Admin would reasonably expect to do directly are not yet
+built as their own screens: setting up a location's floors and slots (today
+this can only be done through the manager tools, meaning the admin would
+need to be that location's assigned manager to do it), and changing an
+existing user's role in a general way (today, a manager account is always
+created directly as a manager from the start — there's no "promote this
+driver" or "demote this manager" screen). Both are called out in the
+separate improvement-suggestions document.
+
+================================================================================
+6. HOW REAL-TIME UPDATES WORK, IN PLAIN TERMS
+================================================================================
+The moment you log in, the app opens a live connection to the server that
+stays open in the background for as long as you're signed in, and closes
+when you log out. Two things ride on this live connection:
+
+  - NOTIFICATIONS arrive instantly, the moment something happens that
+    concerns you (see the list in 3.11), rather than only showing up the
+    next time you happen to reload a page.
+  - SLOT STATUS updates live on any screen currently showing a specific
+    location's slots — a driver browsing that location's available spots,
+    or a manager managing that location's floor — so if a slot's status
+    changes for any reason while you're looking at it, you see the change
+    immediately without refreshing.
+
+This live-updating behavior does NOT apply to: the available-slot count
+shown on the search results list (that only refreshes when you search
+again), or the analytics dashboards (those only refresh when opened).
+
+================================================================================
+7. GLOSSARY — WHAT EACH STATUS MEANS
+================================================================================
+
+BOOKING STATUS
+  - Reserved       — a slot is held for you, but you haven't checked in yet.
+  - Checked In      — you've arrived and are actively parked; the clock that
+                      determines your charge is running.
+  - Completed       — you've checked out; a payment has been recorded.
+  - Cancelled       — the reservation was called off before check-in.
+  - Expired         — you never checked in within the 15-minute window, so
+                      the system cancelled it automatically and freed the
+                      slot.
+
+SLOT STATUS
+  - Available       — free to be reserved right now.
+  - Reserved        — held for a specific upcoming/current booking.
+  - Occupied        — a vehicle is currently checked in there.
+  - Under Maintenance — deliberately taken out of service by a manager/admin.
+
+LOCATION STATUS
+  - Active          — visible to drivers in search, can be booked.
+  - Inactive        — hidden from driver search entirely.
+
+PAYMENT METHOD (a record-keeping choice, not live processing)
+  Cash, JazzCash, Easypaisa, or Stripe.
+
+================================================================================
+8. WHERE TO LOOK NEXT
+================================================================================
+For a short checklist-style summary of what's implemented (organized by
+build phase and by role), see PROJECT_DOCUMENTATION.txt in this same folder.
+For known gaps and ideas to make the product better, see
+IMPROVEMENT_SUGGESTIONS.txt.
+================================================================================
