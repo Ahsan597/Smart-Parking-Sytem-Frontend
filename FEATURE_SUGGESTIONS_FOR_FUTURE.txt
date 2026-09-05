@@ -1,0 +1,94 @@
+================================================================================
+SMART PARKING MANAGEMENT SYSTEM — FEATURE SUGGESTIONS FOR THE FUTURE
+================================================================================
+Last updated: 2026-08-16
+New capabilities the platform doesn't have at all today — not fixes to
+existing features (see IMPROVEMENT_SUGGESTIONS.txt for those). Grouped by who
+it's mainly for, roughly ordered by how much value it'd likely add first.
+
+--------------------------------------------------------------------------------
+FOR DRIVERS
+--------------------------------------------------------------------------------
+
+  - Ratings and reviews. Let a driver rate and leave a comment on a location
+    after a completed booking, and show an average rating in search results
+    — helps other drivers choose, and gives managers/admins real feedback.
+
+  - A real payment gateway. Today, checkout just records which payment
+    method you say you used (Cash, JazzCash, Easypaisa, Stripe) — no money
+    actually moves. Genuinely connecting to one or more of these would let
+    the platform actually collect payment.
+
+  - A queue/waitlist for a full location. If everywhere is taken, let a
+    driver join a waitlist and get notified the moment a spot opens — a
+    formal version of what favoriting a location already does informally.
+
+  - Recurring reservations for regular commuters — "reserve this same spot
+    every weekday" instead of booking fresh each time.
+
+  - Ability to extend a planned check-out time (or add one after the fact)
+    without needing to check out and start over.
+
+  - A quick way for someone without an account to book once — e.g. a QR
+    code at the entrance for a one-time guest reservation, common in real
+    parking setups where not every visitor wants to register.
+
+  - SMS notifications as a backup to in-app/email ones, for drivers who
+    aren't actively watching the app.
+
+  - A native phone app (or at least real push notifications to a phone),
+    rather than only a browser-based experience.
+
+--------------------------------------------------------------------------------
+FOR PARKING MANAGERS
+--------------------------------------------------------------------------------
+
+  - Bulk actions: mark a whole floor under maintenance in one step instead
+    of slot by slot; import a location's whole floor/slot layout from a
+    file instead of adding each one by hand.
+
+  - Dynamic/surge pricing — automatically charge more during known busy
+    hours. The peak-hours analytics already tell a manager when demand is
+    highest; this would let pricing respond to it automatically instead of
+    manually.
+
+  - A dispute/support flow — let a manager (or a driver) flag a specific
+    booking as having a problem (wrong charge, slot was already occupied,
+    etc.) for admin review, instead of that happening outside the app
+    entirely.
+
+--------------------------------------------------------------------------------
+FOR SUPER ADMIN / PLATFORM-WIDE
+--------------------------------------------------------------------------------
+
+  - An audit log — a record of who changed what and when (pricing changes,
+    manager reassignments, deletions, role changes) for accountability,
+    especially once more than one admin is using the platform.
+
+  - Two-factor authentication for manager and admin accounts specifically,
+    since they hold more sensitive access than a driver account.
+
+  - Exportable reports — download the analytics numbers (revenue,
+    occupancy, peak hours) as a spreadsheet/CSV for use outside the app.
+
+  - Promo codes / discount codes that admin or a manager can create and a
+    driver can apply at checkout.
+
+  - A loyalty/rewards system — small discounts or perks for drivers after a
+    number of completed bookings, to encourage repeat use.
+
+--------------------------------------------------------------------------------
+LONGER-TERM / BIGGER IDEAS
+--------------------------------------------------------------------------------
+
+  - Automatic vehicle recognition at physical entry/exit gates (camera
+    reads the plate, matches it to a reservation) — a much bigger,
+    hardware-integration feature, but the natural next step if this is ever
+    deployed at a real, physical, staffed-less location.
+
+  - True advance booking with a real calendar of future time-slots per
+    slot (multi-day ahead, not just the current same-visit window) — a
+    bigger redesign than what exists today, mentioned here as the natural
+    next step if same-day scheduling (already built) turns out not to be
+    enough.
+================================================================================

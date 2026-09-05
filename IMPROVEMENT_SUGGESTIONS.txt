@@ -1,9 +1,11 @@
 ================================================================================
 SMART PARKING MANAGEMENT SYSTEM — ISSUES & SUGGESTIONS
 ================================================================================
-Last updated: 2026-08-14
+Last updated: 2026-08-16
 A plain-language list of what's worth fixing, and what would make the product
-better. Organized by priority, not by phase.
+better. Organized by priority, not by phase. This revision folds in a full
+review pass (product walkthrough + a line-by-line code review), and removes
+two earlier items that have since been built (see RESOLVED note below).
 
 --------------------------------------------------------------------------------
 1. ISSUES WORTH FIXING
@@ -20,6 +22,11 @@ HIGH PRIORITY
     either explain why ("this vehicle has booking history and can't be
     removed") or offer an alternative like archiving it instead.
 
+  - Deleting a floor or a slot doesn't check whether it has an active
+    booking tied to it. A manager could delete a slot out from under a
+    driver who's currently parked there (or has it reserved), with no
+    warning that anyone is affected.
+
   - If a login session expires while someone is using the app, they get
     silently logged out with no explanation — their next click just bounces
     them to the login page. A clear message ("your session expired, please
@@ -28,12 +35,28 @@ HIGH PRIORITY
   - Once a location is marked inactive, admin has no way to find it again to
     reactivate it — it just disappears from the location list.
 
+  - Editing a location that doesn't have pricing configured yet forces the
+    admin to also fill in an hourly rate just to save an unrelated change —
+    reassigning its manager, or flipping it to inactive, for example. Setting
+    pricing shouldn't be a requirement for making an unrelated edit.
+    Related: if an admin edits a location's details AND its pricing at the
+    same time, and only the pricing part fails to save, the location's other
+    changes may have already gone through on the server — but the edit
+    screen stays open showing the old values and doesn't refresh, so there's
+    no way to tell part of the save actually worked without reloading the
+    page.
+
 MEDIUM PRIORITY
 
-  - Managers and admins can't see who's currently parked where. They can see
-    a slot's status (available/reserved/occupied), but not which driver
-    reserved it, when, or step in if there's a problem (e.g. manually check
-    someone out). This is a real gap for day-to-day operations.
+  - On a manager's "Bookings at this location" list: if they change the
+    status filter (say, from "Currently Parked" to "Reserved") and then a
+    live update arrives in the background, the list can silently snap back
+    to showing data for the OLD filter instead of what's currently selected
+    on screen. A similar issue exists when a manager switches from viewing
+    one floor's slots to another floor at the same location without leaving
+    the page — live updates can keep applying to the floor they left
+    instead of the one now on screen. Both would need to be reproduced and
+    fixed together, since they come from the same underlying cause.
 
   - Admin can't set up floors and parking slots for a location directly —
     they'd have to do it through the manager's tools instead. Since admin is
@@ -43,13 +66,31 @@ MEDIUM PRIORITY
     creating a brand-new manager account. There's no way to, say, promote an
     existing driver to manager, or demote a manager.
 
-  - Drivers only get told a reservation expired after the fact. A heads-up
-    a few minutes before it's about to expire (so they can still check in
-    time) would prevent avoidable cancellations.
-
   - Parking spot type doesn't affect price. A VIP or EV charging spot costs
     the same as a normal spot at the same location — pricing is only set per
     location, not per spot type, which likely isn't the intent.
+
+  - A driver who clicks "Reserve" the instant they land on a location's page
+    — before their own vehicle list has finished loading — can be wrongly
+    told "you need to add a vehicle first," even if they already have one.
+    It's just mistaking "still loading" for "actually has none."
+
+  - Registration doesn't ask for the password twice. A typo while choosing a
+    password isn't caught until the next login attempt fails, with no clue
+    why.
+
+  - The notification list has no limit and nothing ever removes old entries
+    from it — it only ever grows. There's also no way to dismiss/delete a
+    single notification, only mark it read.
+
+  - If notifications fail to load (a network hiccup, a server hiccup), there
+    is currently no error shown at all — it just looks like "no
+    notifications yet," which could hide a real problem from the user.
+
+  - Marking a notification as read updates the screen immediately even if
+    the actual request to the server fails behind the scenes — so it can
+    visually look "read" without it actually being saved as read on the
+    server.
 
 LOWER PRIORITY / POLISH
 
@@ -65,6 +106,28 @@ LOWER PRIORITY / POLISH
   - Login credentials are stored in a way that's a bit more exposed to
     attack than best practice — worth hardening before this ever handles
     real money at scale.
+  - If the app is ever deployed with a missing piece of server-address
+    configuration, the whole app can fail to load at all (a blank screen)
+    instead of showing a clear error message.
+  - If someone logs out right after logging in — before their notifications
+    have finished loading — and then logs straight back in, there's a rare
+    chance the previous session's notifications briefly flash on screen
+    before correcting itself a moment later.
+  - A handful of small live-updating pieces (the countdown on a reserved
+    booking, the running cost estimate shown during checkout) each run
+    their own independent once-a-second timer rather than sharing one. Not
+    incorrect, just doing more background work than it needs to — the
+    checkout estimate in particular recalculates every second even though
+    the number it shows can only actually change once an hour.
+  - Favoriting or unfavoriting a location re-downloads your entire
+    favorites list from the server every time, rather than just updating
+    the one item you clicked. Works correctly, just busier than it needs to
+    be, especially with a long favorites list.
+  - Some behavior is repeated in more than one place instead of living in
+    one shared spot (e.g. the list of payment methods, or how a currency
+    amount gets displayed). Not wrong today, but it means a future change to
+    one of these needs to be remembered and applied everywhere it was
+    copied, or the copies quietly drift apart.
 
 --------------------------------------------------------------------------------
 2. SUGGESTIONS TO MAKE THE PRODUCT BETTER
@@ -74,10 +137,6 @@ LOWER PRIORITY / POLISH
     coordinates are already collected — showing pins on a map (with
     "nearest to me") would make finding parking much easier than a
     city/name search box.
-
-  - Let managers/admins see a live list of current bookings and check-ins at
-    a location — not just slot colors — with the ability to intervene
-    (manually check someone in/out, cancel a stuck booking).
 
   - Let a manager create a booking on the spot for a walk-in driver who
     doesn't have the app — common in real parking lots.
@@ -104,4 +163,22 @@ LOWER PRIORITY / POLISH
   - Notify a driver in advance (not just after the fact) when their
     reservation is about to expire, with a one-tap way to check in
     immediately from the notification.
+
+  - Worth knowing rather than necessarily "fixing": reserving a slot ahead
+    of time (say, for a check-in two hours from now) locks that slot
+    completely for everyone else for the whole waiting period, even though
+    the driver hasn't arrived yet. This was a deliberate choice to keep
+    things simple (no calendar of future time-slots to manage), but it does
+    mean a busy location can't be booked more efficiently around a advance
+    reservation — worth revisiting if advance booking becomes a bigger part
+    of how the product is used.
+
+================================================================================
+RESOLVED SINCE THE LAST REVIEW (kept here for the record, not carried forward)
+================================================================================
+  - "Managers and admins can't see who's currently parked where" and the
+    matching suggestion "let managers/admins see a live list of current
+    bookings, with the ability to intervene" — both done: a location's page
+    now shows exactly who's parked where, when, and lets a manager or admin
+    check someone out directly.
 ================================================================================
